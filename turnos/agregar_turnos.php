@@ -2,12 +2,12 @@
 session_start();
 
 if (empty($_SESSION['Usuario_Nombre'])) { // Si el usuario no está logueado, no lo deja entrar
-    header('Location: ../inicio/cerrarsesion.php');
+    header('Location: ../core/cerrarsesion.php');
     exit;
 }
 
-require('../encabezado.inc.php'); // Encabezado
-require('../barraLateral.inc.php'); // Barra lateral
+require('../shared/encabezado.inc.php'); // Encabezado
+require('../shared/barraLateral.inc.php'); // Barra lateral
 
 require_once '../funciones/conexion.php';
 $MiConexion = ConexionBD();
@@ -21,8 +21,6 @@ $CantidadEstilistas = count($ListadoEstilistas);
 
 $ListadoClientes = Listar_Clientes_Turnos($MiConexion);
 $CantidadClientes = count($ListadoClientes);
-
-require_once '../funciones/insertar_clientes.php';
 
 $_SESSION['Estilo'] = 'alert';
 
