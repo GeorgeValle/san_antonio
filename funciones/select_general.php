@@ -210,6 +210,107 @@ function Modificar_Paciente($vConexion) {
     
 }
 
+function Listar_Servicios($vConexion) {
+
+    $Listado=array();
+
+      //1) genero la consulta que deseo
+        $SQL = "SELECT idServicio , denominacion
+        FROM servicios
+        ORDER BY denominacion";
+
+        //2) a la conexion actual le brindo mi consulta, y el resultado lo entrego a variable $rs
+        $rs = mysqli_query($vConexion, $SQL);
+        
+        //3) el resultado deberá organizarse en una matriz, entonces lo recorro
+        $i=0;
+        while ($data = mysqli_fetch_array($rs)) {
+            $Listado[$i]['ID'] = $data['idServicio'];
+            $Listado[$i]['DENOMINACION'] = $data['denominacion'];
+            $i++;
+        }
+
+    //devuelvo el listado generado en el array $Listado. (Podra salir vacio o con datos)..
+    return $Listado;
+}
+
+function InsertarTurnos($vConexion) {
+    // 1. Escapar los datos para prevenir inyección SQL
+    $idPaciente = mysqli_real_escape_string($vConexion, $_POST['Paciente']);
+    $idServicio = mysqli_real_escape_string($vConexion, $_POST['Servicio']);
+    $fecha = mysqli_real_escape_string($vConexion, $_POST['Fecha']);
+    $hora = mysqli_real_escape_string($vConexion, $_POST['Horario']);
+
+    // 2. Crear la consulta SQL
+    $SQL_Insert = "INSERT INTO turnos (
+        idPaciente, 
+        idServicio, 
+        fecha, 
+        hora
+    ) VALUES (
+        '$idPaciente',
+        '$idServicio',
+        '$fecha',
+        '$hora'
+    )";
+
+    // 3. Ejecutar la consulta
+    if (!mysqli_query($vConexion, $SQL_Insert)) {
+        // Registrar el error para depuración
+        error_log("Error al insertar turno: " . mysqli_error($vConexion));
+        return false;
+    }
+
+    return true;
+}
+
+function Listar_Turnos($vConexion) {
+    $Listado = array();
+
+    // Consulta SQL modificada
+    $SQL = "SELECT 
+                T.idTurno,
+                T.fecha,
+                T.hora,
+                P.NOMBRE AS nombre_paciente,
+                P.APELLIDO AS apellido_paciente,
+                S.DENOMINACION AS servicio,
+                T.idPaciente,
+                T.idServicio
+            FROM 
+                turnos T
+            INNER JOIN 
+                pacientes P ON T.idPaciente = P.idPaciente
+            INNER JOIN 
+                servicios S ON T.idServicio = S.idServicio
+            ORDER BY 
+                T.fecha DESC, 
+                T.hora";
+
+    $rs = mysqli_query($vConexion, $SQL);
+    
+    if (!$rs) {
+        // Manejo de error en la consulta
+        error_log("Error en Listar_Turnos: " . mysqli_error($vConexion));
+        return $Listado; // Devuelve array vacío si hay error
+    }
+
+    $i = 0;
+    while ($data = mysqli_fetch_assoc($rs)) {
+        $Listado[$i]['ID_TURNO'] = $data['idTurno'];
+        $Listado[$i]['FECHA'] = $data['fecha'];
+        $Listado[$i]['HORARIO'] = $data['hora'];
+        $Listado[$i]['NOMBRE_PACIENTE'] = $data['nombre_paciente'];
+        $Listado[$i]['APELLIDO_PACIENTE'] = $data['apellido_paciente'];
+        $Listado[$i]['SERVICIO'] = $data['servicio'];
+        $Listado[$i]['ID_PACIENTE'] = $data['idPaciente'];
+        $Listado[$i]['ID_SERVICIO'] = $data['idServicio'];
+        $i++;
+    }
+
+    return $Listado;
+}
+
 function Eliminar_Turno($vConexion , $vIdConsulta) {
 
 
@@ -298,13 +399,10 @@ function Validar_Turno(){
     if (strlen($_POST['Horario']) < 4) {
         $_SESSION['Mensaje'].='Debes seleccionar un horario. <br />';
     }
-    if ($_POST['TipoServicio'] == 'Selecciona una opcion') {
+    if ($_POST['Servicio'] == 'Selecciona una opcion') {
         $_SESSION['Mensaje'].='Debes seleccionar un Tipo de Servicio. <br />';
     }
-    if ($_POST['Estilista'] == 'Selecciona una opcion') {
-        $_SESSION['Mensaje'].='Debes seleccionar un Estilista. <br />';
-    }
-    if ($_POST['Cliente'] == 'Selecciona una opcion') {
+    if ($_POST['Paciente'] == 'Selecciona una opcion') {
         $_SESSION['Mensaje'].='Debes seleccionar un Cliente. <br />';
     }
 
@@ -346,80 +444,6 @@ function Modificar_Turno($vConexion) {
     
 }
 
-function Listar_Tipos($vConexion) {
-
-    $Listado=array();
-
-      //1) genero la consulta que deseo
-        $SQL = "SELECT IdTipoServicio , Denominacion
-        FROM tipo_servicio
-        ORDER BY Denominacion";
-
-        //2) a la conexion actual le brindo mi consulta, y el resultado lo entrego a variable $rs
-        $rs = mysqli_query($vConexion, $SQL);
-        
-        //3) el resultado deberá organizarse en una matriz, entonces lo recorro
-        $i=0;
-        while ($data = mysqli_fetch_array($rs)) {
-            $Listado[$i]['ID'] = $data['IdTipoServicio'];
-            $Listado[$i]['DENOMINACION'] = $data['Denominacion'];
-            $i++;
-        }
-
-    //devuelvo el listado generado en el array $Listado. (Podra salir vacio o con datos)..
-    return $Listado;
-}
-
-function Listar_Estilistas($vConexion) {
-
-    $Listado=array();
-
-      //1) genero la consulta que deseo
-        $SQL = "SELECT IdEstilista , Apellido , Nombre
-        FROM estilista
-        ORDER BY Apellido";
-
-        //2) a la conexion actual le brindo mi consulta, y el resultado lo entrego a variable $rs
-        $rs = mysqli_query($vConexion, $SQL);
-        
-        //3) el resultado deberá organizarse en una matriz, entonces lo recorro
-        $i=0;
-        while ($data = mysqli_fetch_array($rs)) {
-            $Listado[$i]['ID'] = $data['IdEstilista'];
-            $Listado[$i]['APELLIDO'] = $data['Apellido'];
-            $Listado[$i]['NOMBRE'] = $data['Nombre'];
-            $i++;
-        }
-
-    //devuelvo el listado generado en el array $Listado. (Podra salir vacio o con datos)..
-    return $Listado;
-}
-
-function Listar_Clientes_Turnos($vConexion) {
-
-    $Listado=array();
-
-      //1) genero la consulta que deseo
-        $SQL = "SELECT idCliente , apellido , nombre
-        FROM clientes
-        ORDER BY Apellido";
-
-        //2) a la conexion actual le brindo mi consulta, y el resultado lo entrego a variable $rs
-        $rs = mysqli_query($vConexion, $SQL);
-        
-        //3) el resultado deberá organizarse en una matriz, entonces lo recorro
-        $i=0;
-        while ($data = mysqli_fetch_array($rs)) {
-            $Listado[$i]['ID'] = $data['idCliente'];
-            $Listado[$i]['APELLIDO'] = $data['apellido'];
-            $Listado[$i]['NOMBRE'] = $data['nombre'];
-            $i++;
-        }
-
-    //devuelvo el listado generado en el array $Listado. (Podra salir vacio o con datos)..
-    return $Listado;
-}
-
 function Listar_Estados_Turnos($vConexion) {
 
     $Listado=array();
@@ -437,55 +461,6 @@ function Listar_Estados_Turnos($vConexion) {
         while ($data = mysqli_fetch_array($rs)) {
             $Listado[$i]['ID'] = $data['IdEstado'];
             $Listado[$i]['DENOMINACION'] = $data['Denominacion'];
-            $i++;
-        }
-
-    //devuelvo el listado generado en el array $Listado. (Podra salir vacio o con datos)..
-    return $Listado;
-}
-
-function Listar_Turnos($vConexion) {
-
-    $Listado=array();
-
-      //1) genero la consulta que deseo
-
-        $SQL = "SELECT T.IdTurno, T.Fecha, T.Horario, C.nombre, C.apellido, E.IdEstado as estado, ES.Nombre, ES.Apellido, T.IdTipoServicio
-        FROM clientes C, estado E, estilista ES, turnos T
-        WHERE T.IdCliente=C.idCliente AND T.IdEstado=E.IdEstado
-        AND T.IdEstilista=ES.IdEstilista ";
-        
-        if($_SESSION['Usuario_Nivel'] == '2'){
-            //si soy estilista solo veo mis consultas
-            if($_SESSION['Usuario_Id'] == 3){
-                //Listo lo de Lorena
-                $SQL .="AND T.IdEstilista=2 ";
-            }elseif($_SESSION['Usuario_Id'] == 4){
-                //Listo lo de Natalia
-                $SQL .="AND T.IdEstilista=1 ";
-            }    
-
-        }
-
-        $SQL .= "ORDER BY T.Fecha DESC, T.Horario";
-
-        //2) a la conexion actual le brindo mi consulta, y el resultado lo entrego a variable $rs
-        $rs = mysqli_query($vConexion, $SQL);
-        
-        //3) el resultado deberá organizarse en una matriz, entonces lo recorro
-        $i=0;
-        while ($data = mysqli_fetch_array($rs)) {
-            //paso el contenido del tipo de servicio a un array
-
-            $Listado[$i]['ID_TURNO'] = $data['IdTurno'];
-            $Listado[$i]['FECHA'] = $data['Fecha'];
-            $Listado[$i]['HORARIO'] = $data['Horario'];
-            $Listado[$i]['NOMBRE_C'] = $data['nombre'];
-            $Listado[$i]['APELLIDO_C'] = $data['apellido'];
-            $Listado[$i]['ESTADO'] = $data['estado'];
-            $Listado[$i]['NOMBRE_E'] = $data['Nombre'];
-            $Listado[$i]['APELLIDO_E'] = $data['Apellido'];
-            $Listado[$i]['TIPO_SERVICIO'] = $data['IdTipoServicio'];
             $i++;
         }
 
@@ -554,22 +529,6 @@ function Listar_Turnos_Parametro($vConexion,$criterio,$parametro) {
     //devuelvo el listado generado en el array $Listado. (Podra salir vacio o con datos)..
     return $Listado;
 
-}
-
-function InsertarTurnos($vConexion){
-    //divido el array a una cadena separada por coma para guardar
-    $string = implode(',', $_POST['TipoServicio']);
-
-    $SQL_Insert="INSERT INTO turnos ( Horario, Fecha, IdTipoServicio, IdEstilista, IdEstado, IdCliente)
-    VALUES ('".$_POST['Horario']."' , '".$_POST['Fecha']."' , '".$string."', '".$_POST['Estilista']."', '1', '".$_POST['Cliente']."')";
-
-
-    if (!mysqli_query($vConexion, $SQL_Insert)) {
-        //si surge un error, finalizo la ejecucion del script con un mensaje
-        die('<h4>Error al intentar insertar el registro.</h4>');
-    }
-
-    return true;
 }
 
 function ColorDeFila($vFecha,$vEstado) {
