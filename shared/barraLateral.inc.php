@@ -45,6 +45,27 @@
         </ul>
       </li><!-- End Turnos Nav -->
 
+      <li class="nav-item">
+        <a class="nav-link collapsed" data-bs-target="#historia-medica" data-bs-toggle="collapse" href="#">
+          <i class="bi bi-person-bounding-box"></i><span>Historia Medica</span><i class="bi bi-chevron-down ms-auto"></i>
+        </a>
+        <ul id="historia-medica" class="nav-content collapse " data-bs-parent="#sidebar-nav">
+          <li>
+            <a href="../historiaMedica/agregar_historia.php">
+              <i class="bi bi-circle"></i><span>Agregar</span>
+            </a>
+          </li>
+          <li>
+            <a href="../historiaMedica/listados_historia.php">
+              <i class="bi bi-circle"></i><span>Listados</span>
+            </a>
+          </li>
+        </ul>
+      </li><!-- End Clientes Nav -->
+
+      
+
+      
     </ul>
 
   </aside><!-- End Sidebar-->

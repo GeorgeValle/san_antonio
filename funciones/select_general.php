@@ -616,4 +616,124 @@ function Listar_Horarios_Ocupados($MiConexion, $fecha) {
     return $horariosOcupados;
 }
 
+function Listar_Historia($vConexion) {
+    $Listado = array();
+
+    $SQL = "SELECT 
+                h.idHistoriaMedica,
+                p.nombre AS nombre_paciente,
+                p.apellido AS apellido_paciente,
+                p.dni,
+                h.enfermedades,
+                h.medicamentos,
+                h.servicios,
+                h.esparcimiento
+            FROM historiamedica h
+            INNER JOIN pacientes p ON h.idPaciente = p.idPaciente";
+
+    $rs = mysqli_query($vConexion, $SQL);
+
+    $i = 0;
+    while ($data = mysqli_fetch_array($rs)) {
+        $Listado[$i]['ID_HISTORIA'] = $data['idHistoriaMedica'];
+        $Listado[$i]['NOMBREPACIENTE'] = $data['nombre_paciente'];
+        $Listado[$i]['APELLIDOPACIENTE'] = $data['apellido_paciente'];
+        $Listado[$i]['DNI'] = $data['dni'];
+        $Listado[$i]['ENFERMEDADES'] = $data['enfermedades'];
+        $Listado[$i]['MEDICAMENTOS'] = $data['medicamentos'];
+        $Listado[$i]['SERVICIOS'] = $data['servicios'];
+        $Listado[$i]['ESPARCIMIENTO'] = $data['esparcimiento'];
+        $i++;
+    }
+
+    return $Listado;
+}
+
+function Eliminar_Historia($vConexion , $vIdConsulta) {
+
+    //soy admin 
+        $SQL_MiConsulta="SELECT idHistoriaMedica FROM historiamedica
+                        WHERE idHistoriaMedica = $vIdConsulta ";
+   
+    
+    $rs = mysqli_query($vConexion, $SQL_MiConsulta);
+        
+    $data = mysqli_fetch_array($rs);
+
+    if (!empty($data['idHistoriaMedica']) ) {
+        //si se cumple todo, entonces elimino:
+        mysqli_query($vConexion, "DELETE FROM historiamedica WHERE idHistoriaMedica = $vIdConsulta");
+        return true;
+
+    }else {
+        return false;
+    }
+    
+}
+
+function Listar_Historia_Parametro($vConexion, $criterio, $parametro) {
+    $Listado = array();
+
+    // Escapamos el parámetro de búsqueda para prevenir inyecciones SQL
+    $parametro = mysqli_real_escape_string($vConexion, $parametro);
+
+    // Armamos el WHERE según el criterio seleccionado
+    switch ($criterio) {
+        case 'Nombre':
+            $where = "p.nombre LIKE '%$parametro%' OR p.apellido LIKE '%$parametro%'";
+            break;
+        case 'DNI':
+            $where = "p.dni LIKE '%$parametro%'";
+            break;
+        case 'Enfermedades':
+            $where = "h.enfermedades LIKE '%$parametro%'";
+            break;
+        case 'Medicamentos': // OJO: corregido de "Medocamentos"
+            $where = "h.medicamentos LIKE '%$parametro%'";
+            break;
+        case 'Servicios':
+            $where = "h.servicios LIKE '%$parametro%'";
+            break;
+        case 'Esparcimiento':
+            $where = "h.esparcimiento LIKE '%$parametro%'";
+            break;
+        default:
+            $where = "1=1"; // Sin filtro si no coincide ningún criterio
+            break;
+    }
+
+    // Consulta SQL con filtro aplicado
+    $SQL = "SELECT 
+                h.idHistoriaMedica,
+                p.nombre AS nombre_paciente,
+                p.apellido AS apellido_paciente,
+                p.dni,
+                h.enfermedades,
+                h.medicamentos,
+                h.servicios,
+                h.esparcimiento
+            FROM historiamedica h
+            INNER JOIN pacientes p ON h.idPaciente = p.idPaciente
+            WHERE $where";
+
+    $rs = mysqli_query($vConexion, $SQL);
+
+    $i = 0;
+    while ($data = mysqli_fetch_array($rs)) {
+        $Listado[$i]['ID_HISTORIA'] = $data['idHistoriaMedica'];
+        $Listado[$i]['NOMBREPACIENTE'] = $data['nombre_paciente'];
+        $Listado[$i]['APELLIDOPACIENTE'] = $data['apellido_paciente'];
+        $Listado[$i]['DNI'] = $data['dni'];
+        $Listado[$i]['ENFERMEDADES'] = $data['enfermedades'];
+        $Listado[$i]['MEDICAMENTOS'] = $data['medicamentos'];
+        $Listado[$i]['SERVICIOS'] = $data['servicios'];
+        $Listado[$i]['ESPARCIMIENTO'] = $data['esparcimiento'];
+        $i++;
+    }
+
+    return $Listado;
+}
+
+
+
 ?>
