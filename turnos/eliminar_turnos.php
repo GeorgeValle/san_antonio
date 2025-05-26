@@ -12,14 +12,13 @@
     require_once '../funciones/select_general.php';
 
     if ( Eliminar_Turno($MiConexion , $_GET['ID_TURNO']) != false ) {
-        $_SESSION['Mensaje'].='Se ha eliminado la consulta seleccionada';
+        $_SESSION['Mensaje'].='Se ha eliminado el turno seleccionado';
         $_SESSION['Estilo']='success';
     }else {
-        $_SESSION['Mensaje'].='No se pudo borrar la consulta. <br /> ';
+        $_SESSION['Mensaje'].='No se pudo borrar el turno. <br /> ';
         $_SESSION['Estilo']='warning';
     }
     
-   
-    header('Location: ../listados/listados_turnos.php');
+    header('Location: ../turnos/listados_turnos.php');
     exit;
 ?>

@@ -7,58 +7,51 @@ if (empty($_SESSION['Usuario_Nombre']) ) { // si el usuario no esta logueado no 
   exit;
 }
 
-require ('../encabezado.inc.php'); //Aca uso el encabezado que esta seccionados en otro archivo
+require ('../shared/encabezado.inc.php'); //Aca uso el encabezado que esta seccionados en otro archivo
 
-require ('../barraLateral.inc.php'); //Aca uso el encabezaso que esta seccionados en otro archivo
+require ('../shared/barraLateral.inc.php'); //Aca uso el encabezaso que esta seccionados en otro archivo
 
 require_once '../funciones/conexion.php';
 $MiConexion=ConexionBD(); 
 
 require_once '../funciones/select_general.php';
-$ListadoTipos = Listar_Tipos($MiConexion);
-$CantidadTipos = count($ListadoTipos);
 
-$ListadoEstilistas = Listar_Estilistas($MiConexion);
-$CantidadEstilistas = count($ListadoEstilistas);
+// Listados para selects
+$ListadoPacientes = Listar_Pacientes($MiConexion);
+$CantidadPacientes = count($ListadoPacientes);
 
-$ListadoClientes = Listar_Clientes_Turnos($MiConexion);
-$CantidadClientes = count($ListadoClientes);
+$ListadoServicios = Listar_Servicios($MiConexion);
+$CantidadServicios = count($ListadoServicios);
 
-$ListadoEstados = Listar_Estados_Turnos($MiConexion);
-$CantidadEstados = count($ListadoEstados);
- 
-
-//este array contendra los datos de la consulta original, y cuando 
-//pulse el boton, mantendrá los datos ingresados hasta que se validen y se puedan modificar
-$DatosTurnoActual=array();
+// Array para mantener datos del turno actual
+$DatosTurnoActual = array();
 
 if (!empty($_POST['ModificarTurno'])) {
-    Validar_Turno();
-
-    if (empty($_SESSION['Mensaje'])) { //ya toque el boton modificar y el mensaje esta vacio...
-        
-        if (Modificar_Turno($MiConexion) != false) {
-            $_SESSION['Mensaje'] = "Tu cliente se ha modificado correctamente!";
-            $_SESSION['Estilo']='success';
-            header('Location: ../listados/listados_turnos.php');
+    // Validación simple (puedes mejorarla)
+    $_SESSION['Mensaje'] = '';
+    if (empty($_POST['Fecha']) || empty($_POST['Horario']) || empty($_POST['Paciente']) || empty($_POST['Servicio'])) {
+        $_SESSION['Mensaje'] = 'Todos los campos son obligatorios.';
+        $_SESSION['Estilo'] = 'warning';
+        $DatosTurnoActual['ID_TURNO'] = $_POST['IdTurno'];
+        $DatosTurnoActual['FECHA'] = $_POST['Fecha'];
+        $DatosTurnoActual['HORARIO'] = $_POST['Horario'];
+        $DatosTurnoActual['ID_PACIENTE'] = $_POST['Paciente'];
+        $DatosTurnoActual['ID_SERVICIO'] = $_POST['Servicio'];
+    } else {
+        // Modificar turno
+        if (Modificar_Turno($MiConexion, $_POST)) {
+            $_SESSION['Mensaje'] = "El turno se ha modificado correctamente!";
+            $_SESSION['Estilo'] = 'success';
+            header('Location: ../turnos/listados_turnos.php');
             exit;
+        } else {
+            $_SESSION['Mensaje'] = "Error al modificar el turno.";
+            $_SESSION['Estilo'] = 'danger';
         }
-
-    }else {  //ya toque el boton modificar y el mensaje NO esta vacio...
-        $_SESSION['Estilo']='warning';
-        $DatosTurnoActual['ID_TURNO'] = !empty($_POST['IdTurno']) ? $_POST['IdTurno'] :'';
-        $DatosTurnoActual['HORARIO'] = !empty($_POST['Horario']) ? $_POST['Horario'] :'';
-        $DatosTurnoActual['FECHA'] = !empty($_POST['Fecha']) ? $_POST['Fecha'] :'';
-        $DatosTurnoActual['TIPO_SERVICIO'] = !empty($_POST['TipoServicio']) ? $_POST['TipoServicio'] :'';
-        $DatosTurnoActual['ESTILISTA'] = !empty($_POST['Estilista']) ? $_POST['Estilista'] :'';
-        $DatosTurnoActual['CLIENTE'] = !empty($_POST['Cliente']) ? $_POST['Cliente'] :'';
-        $DatosTurnoActual['ESTADO'] = !empty($_POST['Estado']) ? $_POST['Estado'] :'';
     }
-
-}else if (!empty($_GET['ID_TURNO'])) {
-    //verifico que traigo el nro de consulta por GET si todabia no toque el boton de Modificar
-    //busco los datos de esta consulta y los muestro
-    $DatosTurnoActual = Datos_Turno($MiConexion , $_GET['ID_TURNO']);
+} else if (!empty($_GET['ID_TURNO'])) {
+    // Cargar datos del turno para editar
+    $DatosTurnoActual=Datos_Turno( $MiConexion, $_GET['ID_TURNO']);
 }
 ?>
 
@@ -100,83 +93,39 @@ if (!empty($_POST['ModificarTurno'])) {
                     </div>
 
                     <div class="col-12">
-                        <label for="selector" class="form-label">Tipo de Servicio</label>
-                        <select class="js-example-basic-single form-select" aria-label="Selector" multiple="multiple" name="TipoServicio[]">
-                            <option value="">Selecciona una opción</option>
+                        <label for="paciente" class="form-label">Paciente</label>
+                        <select class="form-select" name="Paciente" id="paciente">
+                            <option value="">Selecciona un paciente</option>
                             <?php
-                            // Convertir el string de opciones seleccionadas en un array
-                            $opcionesSeleccionadas = !empty($DatosTurnoActual['TIPO_SERVICIO']) ? explode(',', $DatosTurnoActual['TIPO_SERVICIO']) : [];
-
-                            // Recorrer la lista de tipos de servicio
-                            for ($i = 0; $i < $CantidadTipos; $i++) {
-                                // Verificar si la opción actual está en el array de seleccionados
-                                $selected = in_array($ListadoTipos[$i]['ID'], $opcionesSeleccionadas) ? 'selected' : '';
-                            ?>
-                                <option value="<?php echo $ListadoTipos[$i]['ID']; ?>" <?php echo $selected; ?>>
-                                    <?php echo $ListadoTipos[$i]['DENOMINACION']; ?>
+                            for ($i = 0; $i < $CantidadPacientes; $i++) {
+                                $selected = (!empty($DatosTurnoActual['ID_PACIENTE']) && $DatosTurnoActual['ID_PACIENTE'] == $ListadoPacientes[$i]['ID_PACIENTE']) ? 'selected' : '';
+                                ?>
+                                <option value="<?php echo $ListadoPacientes[$i]['ID_PACIENTE']; ?>" <?php echo $selected; ?>>
+                                    <?php echo $ListadoPacientes[$i]['NOMBRE'] . ' ' . $ListadoPacientes[$i]['APELLIDO']; ?>
                                 </option>
                             <?php } ?>
                         </select>
                     </div>
-                    
                     <div class="col-12">
-                        <label for="selector" class="form-label">Estilista</label>
-                        <select class="form-select" aria-label="Selector"  name="Estilista">
-                            <option value="">Selecciona una opcion</option>
-                            <?php 
-                                $Selected='';
-                                for ($i=0; $i<$CantidadEstilistas; $i++) { 
-                                    $Selected = (!empty($DatosTurnoActual['ESTILISTA']) && $DatosTurnoActual['ESTILISTA'] == $ListadoEstilistas[$i]['ID'] )?'selected':'';
-                            ?>
-                            <option value="<?php echo $ListadoEstilistas[$i]['ID']; ?>"   <?php echo $Selected; ?> >
-                            <?php echo $ListadoEstilistas[$i]['APELLIDO']; ?> , 
-                            <?php echo $ListadoEstilistas[$i]['NOMBRE']; ?>
-                        </option>
-                        <?php } ?>
+                        <label for="servicio" class="form-label">Servicio</label>
+                        <select class="form-select" name="Servicio" id="servicio">
+                            <option value="">Selecciona un servicio</option>
+                            <?php
+                            for ($i = 0; $i < $CantidadServicios; $i++) {
+                                $selected = (!empty($DatosTurnoActual['ID_SERVICIO']) && $DatosTurnoActual['ID_SERVICIO'] == $ListadoServicios[$i]['ID']) ? 'selected' : '';
+                                ?>
+                                <option value="<?php echo $ListadoServicios[$i]['ID']; ?>" <?php echo $selected; ?>>
+                                    <?php echo $ListadoServicios[$i]['DENOMINACION']; ?>
+                                </option>
+                            <?php } ?>
                         </select>
                     </div>
-
-                    <div class="col-12">
-                        <label for="selector" class="form-label">Cliente</label>
-                        <select class="form-select" aria-label="Selector"  name="Cliente">
-                            <option value="">Selecciona una opcion</option>
-                            <?php 
-                                $Selected='';
-                                for ($i=0; $i<$CantidadClientes; $i++) { 
-                                    $Selected = (!empty($DatosTurnoActual['CLIENTE']) && $DatosTurnoActual['CLIENTE'] == $ListadoClientes[$i]['ID'] )?'selected':'';
-                            ?>
-                            <option value="<?php echo $ListadoClientes[$i]['ID']; ?>"   <?php echo $Selected; ?> >
-                            <?php echo $ListadoClientes[$i]['APELLIDO']; ?> , 
-                            <?php echo $ListadoClientes[$i]['NOMBRE']; ?>
-                        </option>
-                        <?php } ?>
-
-                        </select>
-                    </div>
-
-                    <div class="col-12">
-                        <label for="selector" class="form-label">Estado</label>
-                        <select class="form-select" aria-label="Selector"  name="Estado">
-                            <option value="">Selecciona una opcion</option>
-                            <?php 
-                                $Selected='';
-                                for ($i=0; $i<$CantidadEstados; $i++) { 
-                                    $Selected = (!empty($DatosTurnoActual['ESTADO']) && $DatosTurnoActual['ESTADO'] == $ListadoEstados[$i]['ID'] )?'selected':'';
-                            ?>
-                            <option value="<?php echo $ListadoEstados[$i]['ID']; ?>"   <?php echo $Selected; ?> >
-                            <?php echo $ListadoEstados[$i]['DENOMINACION']; ?> 
-                        </option>
-                        <?php } ?>
-
-                        </select>
-                    </div>
-
                     <div class="text-center">
 
-                        <input type='hidden' name="IdTurno" value="<?php echo $DatosTurnoActual['ID_TURNO']; ?>" />
+                        <input type='hidden' name="IdTurno" value="<?php echo $DatosTurnoActual['ID_TURNO'] ?? ''; ?>" />
 
                         <button class="btn btn-primary" type="submit" value="Modificar" name="ModificarTurno">Modificar</button>
-                        <a href="../listados/listados_turnos.php" 
+                        <a href="../turnos/listados_turnos.php" 
                         class="btn btn-success btn-info " 
                         title="Listado"> Volver al listado  </a>
                     </div>
@@ -189,17 +138,10 @@ if (!empty($_POST['ModificarTurno'])) {
 
   <?php
   $_SESSION['Mensaje']='';
-require ('../footer.inc.php'); //Aca uso el FOOTER que esta seccionados en otro archivo
+require ('../shared/footer.inc.php'); //Aca uso el FOOTER que esta seccionados en otro archivo
 
 ob_end_flush(); // Envía la salida al navegador
 ?>
-
-<script>
-  // In your Javascript (external .js resource or <script> tag) SELECT 2
-  $(document).ready(function() {
-  $('.js-example-basic-single').select2();
-  });
-</script>
 
 </body>
 

@@ -71,8 +71,7 @@ if (!empty($_POST['Buscar'])) {
                 </div>
                 <div class="col-sm-3 mt-2">
                   <button type="submit" class="btn btn-success btn-xs d-inline-block" value="buscar" name="Buscar">Buscar</button>
-                  <button type="submit" class="btn btn-danger btn-xs d-inline-block" value="limpiar" name="Limpiar">Limpiar</button>
-                  <button type="button" class="btn btn-primary btn-xs d-inline-block" onclick="toggleDownloadButtons()">Descargar</button> 
+                  <button type="submit" class="btn btn-danger btn-xs d-inline-block" value="limpiar" name="Limpiar">Limpiar</button> 
                 </div>
                 <div class="col-sm-5 mt-2">
                       <div class="form-check form-check-inline small-text">
@@ -119,7 +118,7 @@ if (!empty($_POST['Buscar'])) {
                   //Metodo para pintar las filas
                   //list($Title, $Color) = ColorDeFila($ListadoTurnos[$i]['FECHA'],$ListadoTurnos[$i]['ESTADO']); 
                 ?>
-                    <tr class="<?php echo $Color; ?>"  data-bs-toggle="tooltip" data-bs-placement="left" data-bs-original-title="<?php echo $Title; ?>">
+                    <tr">
                         <th scope="row"><?php echo $i+1; ?></th>
                         <td><?php echo $ListadoTurnos[$i]['FECHA']; ?></td>
                         <td><?php echo $ListadoTurnos[$i]['HORARIO']; ?></td>
@@ -127,20 +126,15 @@ if (!empty($_POST['Buscar'])) {
                         <td><?php echo $ListadoTurnos[$i]['NOMBRE_PACIENTE']?>, <?php echo $ListadoTurnos[$i]['APELLIDO_PACIENTE']?></td>
                         <td>
                           <!-- eliminar la consulta -->
-                          <a href="../eliminar/eliminar_turnos.php?ID_TURNO=<?php echo $ListadoTurnos[$i]['ID_TURNO']; ?>" 
+                          <a href="../turnos/eliminar_turnos.php?ID_TURNO=<?php echo $ListadoTurnos[$i]['ID_TURNO']; ?>" 
                             title="Eliminar" 
                             onclick="return confirm('Confirma eliminar este turno?');">
                             <i class="bi bi-trash-fill text-danger fs-5"></i>
                           </a>
 
-                          <a href="../modificar/modificar_turnos.php?ID_TURNO=<?php echo $ListadoTurnos[$i]['ID_TURNO']; ?>" 
+                          <a href="../turnos/modificar_turnos.php?ID_TURNO=<?php echo $ListadoTurnos[$i]['ID_TURNO']; ?>" 
                             title="Modificar">
                             <i class="bi bi-pencil-fill text-warning fs-5"></i>
-                          </a>
-
-                          <a href="../descargas/descargar_comp_turnosPDF.php?ID_TURNO=<?php echo $ListadoTurnos[$i]['ID_TURNO']; ?>" 
-                            title="Imprimir">
-                            <i class="bi bi-printer-fill text-primary fs-5"></i>
                           </a>
                       
                         </td>
