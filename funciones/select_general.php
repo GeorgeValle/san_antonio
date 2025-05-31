@@ -164,24 +164,13 @@ function Eliminar_Paciente($vConexion, $vIdConsulta) {
     }
 }
 
-function Datos_Paciente($vConexion , $vIdCliente) {
-    $DatosCliente  =   array();
-    //me aseguro que la consulta exista
-    $SQL = "SELECT * FROM pacientes 
-            WHERE idPaciente = $vIdCliente";
-
-    $rs = mysqli_query($vConexion, $SQL);
-
-    $data = mysqli_fetch_array($rs) ;
-    if (!empty($data)) {
-        $DatosCliente['ID_PACIENTE'] = $data['idPaciente'];
-        $DatosCliente['NOMBRE'] = $data['nombre'];
-        $DatosCliente['APELLIDO'] = $data['apellido'];
-        $DatosCliente['TELEFONO'] = $data['telefono'];
-        $DatosCliente['DNI'] = $data['dni'];
-    }
-    return $DatosCliente;
-
+function Datos_Paciente($conexion, $idPaciente) {
+    $sql = "SELECT nombre AS NOMBRE, dni AS DNI FROM pacientes WHERE idPaciente = ?";
+    $stmt = mysqli_prepare($conexion, $sql);
+    mysqli_stmt_bind_param($stmt, "i", $idPaciente);
+    mysqli_stmt_execute($stmt);
+    $resultado = mysqli_stmt_get_result($stmt);
+    return mysqli_fetch_assoc($resultado);
 }
 
 function Modificar_Paciente($vConexion) {
@@ -485,32 +474,51 @@ function Validar_Turno(){
 }
 
 function Listar_Historia($vConexion) {
-    $Listado = array();
+    $Listado = [];
 
     $SQL = "SELECT 
                 h.idHistoriaMedica,
+                p.idPaciente,
                 p.nombre AS nombre_paciente,
                 p.apellido AS apellido_paciente,
                 p.dni,
                 h.enfermedades,
                 h.medicamentos,
-                h.servicios,
                 h.esparcimiento
             FROM historiamedica h
             INNER JOIN pacientes p ON h.idPaciente = p.idPaciente";
 
     $rs = mysqli_query($vConexion, $SQL);
-
     $i = 0;
+
     while ($data = mysqli_fetch_array($rs)) {
-        $Listado[$i]['ID_HISTORIA'] = $data['idHistoriaMedica'];
-        $Listado[$i]['NOMBREPACIENTE'] = $data['nombre_paciente'];
-        $Listado[$i]['APELLIDOPACIENTE'] = $data['apellido_paciente'];
-        $Listado[$i]['DNI'] = $data['dni'];
-        $Listado[$i]['ENFERMEDADES'] = $data['enfermedades'];
-        $Listado[$i]['MEDICAMENTOS'] = $data['medicamentos'];
-        $Listado[$i]['SERVICIOS'] = $data['servicios'];
-        $Listado[$i]['ESPARCIMIENTO'] = $data['esparcimiento'];
+        $idPaciente = $data['idPaciente'];
+
+        // Obtener servicios actualizados desde turnos
+        $serviciosTurnos = ObtenerServiciosPorPaciente($vConexion, $idPaciente);
+        $serviciosUnicos = [];
+        foreach ($serviciosTurnos as $servicio) {
+            $denominacion = trim($servicio['denominacion']);
+            if (!in_array($denominacion, $serviciosUnicos)) {
+                $serviciosUnicos[] = $denominacion;
+            }
+        }
+
+        // Separar en arrays los demás campos
+        $enfermedades = array_filter(array_map('trim', explode(',', $data['enfermedades'])));
+        $medicamentos = array_filter(array_map('trim', explode(',', $data['medicamentos'])));
+        $esparcimiento = array_filter(array_map('trim', explode(',', $data['esparcimiento'])));
+
+        $Listado[$i] = [
+            'ID_HISTORIA' => $data['idHistoriaMedica'],
+            'NOMBREPACIENTE' => $data['nombre_paciente'],
+            'APELLIDOPACIENTE' => $data['apellido_paciente'],
+            'DNI' => $data['dni'],
+            'ENFERMEDADES' => $enfermedades,
+            'MEDICAMENTOS' => $medicamentos,
+            'SERVICIOS' => $serviciosUnicos, // Servicios desde turnos
+            'ESPARCIMIENTO' => $esparcimiento
+        ];
         $i++;
     }
 
@@ -556,7 +564,7 @@ function Listar_Historia_Parametro($vConexion, $criterio, $parametro) {
         case 'Enfermedades':
             $where = "h.enfermedades LIKE '%$parametro%'";
             break;
-        case 'Medicamentos': // OJO: corregido de "Medocamentos"
+        case 'Medicamentos': 
             $where = "h.medicamentos LIKE '%$parametro%'";
             break;
         case 'Servicios':
@@ -603,28 +611,34 @@ function Listar_Historia_Parametro($vConexion, $criterio, $parametro) {
 }
 
 function InsertarHistoria($conexion) {
-    // Escapar y leer datos del formulario
     $idPaciente   = mysqli_real_escape_string($conexion, $_POST['Paciente']);
     $dni          = mysqli_real_escape_string($conexion, $_POST['DNI']);
-    $enfermedades = mysqli_real_escape_string($conexion, $_POST['Enfermedades']);
-    $medicamentos = mysqli_real_escape_string($conexion, $_POST['Medicamentos']);
-    $esparcimiento= mysqli_real_escape_string($conexion, $_POST['Esparcimiento']);
 
-    // Armar texto de servicios
+    $enfermedades = isset($_POST['Enfermedades']) ? implode(', ', $_POST['Enfermedades']) : '';
+    $medicamentos = isset($_POST['Medicamentos']) ? implode(', ', $_POST['Medicamentos']) : '';
+    $esparcimiento = isset($_POST['Esparcimiento']) ? implode(', ', $_POST['Esparcimiento']) : '';
+
+    $enfermedades = mysqli_real_escape_string($conexion, $enfermedades);
+    $medicamentos = mysqli_real_escape_string($conexion, $medicamentos);
+    $esparcimiento = mysqli_real_escape_string($conexion, $esparcimiento);
+
     $lista = ObtenerServiciosPorPaciente($conexion, $idPaciente);
-    $textoServicios = '';
-    foreach ($lista as $s) {
-        $textoServicios .= $s['denominacion'] . " (" . $s['cantidad'] . " veces), ";
+    $serviciosUnicos = [];
+foreach ($lista as $s) {
+    $denominacion = $s['denominacion'];
+    if (!in_array($denominacion, $serviciosUnicos)) {
+        $serviciosUnicos[] = $denominacion;
     }
-    $textoServicios = rtrim($textoServicios, ', ');
+}
+$textoServicios = implode(', ', $serviciosUnicos);
+$textoServicios = mysqli_real_escape_string($conexion, $textoServicios);
     $textoServicios = mysqli_real_escape_string($conexion, $textoServicios);
 
-    // Preparar e insertar
     $sql = "INSERT INTO historiamedica
             (idPaciente, dni, enfermedades, medicamentos, servicios, esparcimiento)
             VALUES (?, ?, ?, ?, ?, ?)";
     $stmt = mysqli_prepare($conexion, $sql);
-    if ($stmt === false) {
+    if (!$stmt) {
         error_log("Error al preparar InsertarHistoria: " . mysqli_error($conexion));
         return false;
     }
@@ -647,75 +661,56 @@ function InsertarHistoria($conexion) {
 }
 
 function ObtenerServiciosPorPaciente($conexion, $idPaciente) {
-    $sql = "SELECT s.denominacion, COUNT(*) AS cantidad
+    $SQL = "SELECT s.denominacion
             FROM turnos t
             INNER JOIN servicios s ON t.idServicio = s.idServicio
-            WHERE t.idPaciente = ?
-            GROUP BY s.denominacion";
+            WHERE t.idPaciente = $idPaciente";
 
-    $stmt = mysqli_prepare($conexion, $sql);
-    if ($stmt === false) {
-        error_log("Error al preparar ObtenerServiciosPorPaciente: " . mysqli_error($conexion));
-        return [];
-    }
-    mysqli_stmt_bind_param($stmt, "i", $idPaciente);
-    mysqli_stmt_execute($stmt);
-    $resultado = mysqli_stmt_get_result($stmt);
-
+    $rs = mysqli_query($conexion, $SQL);
     $servicios = [];
-    while ($fila = mysqli_fetch_assoc($resultado)) {
-        $servicios[] = $fila;
+
+    while ($data = mysqli_fetch_assoc($rs)) {
+        $servicios[] = $data;
     }
-    mysqli_stmt_close($stmt);
+
     return $servicios;
 }
 
-function Datos_Historia($vConexion, $vIdHistoria) {
-    $sql = "SELECT * FROM historiaMedica WHERE idHistoriaMedica = $vIdHistoria";
-    $resultado = mysqli_query($vConexion, $sql);
-    $data = mysqli_fetch_array($resultado);
-
-    return [
-        'ID_HISTORIA' => $data['idHistoriaMedica'],
-        'ID_PACIENTE' => $data['idPaciente'],
-        'ENFERMEDADES' => $data['enfermedades'],
-        'MEDICAMENTOS' => $data['medicamentos'],
-        'SERVICIOS' => $data['servicios'],
-        'ESPARCIMIENTO' => $data['esparcimiento']
-    ];
+function Datos_Historia($conexion, $idHistoria) {
+    $sql = "SELECT * FROM historiaMedica WHERE idHistoriaMedica = ?";
+    $stmt = mysqli_prepare($conexion, $sql);
+    mysqli_stmt_bind_param($stmt, "i", $idHistoria);
+    mysqli_stmt_execute($stmt);
+    $resultado = mysqli_stmt_get_result($stmt);
+    return mysqli_fetch_assoc($resultado);
 }
 
-function Modificar_Historia($vConexion) {
-    $id = $_POST['IdHistoria'];
-    $enfermedades = $_POST['Enfermedades'];
-    $medicamentos = $_POST['Medicamentos'];
-    $servicios = $_POST['Servicios'];
-    $esparcimiento = $_POST['Esparcimiento'];
-
-    $sql = "UPDATE historiaMedica SET
-            enfermedades = ?,
-            medicamentos = ?,
-            servicios = ?,
-            esparcimiento = ?
-            WHERE idHistoriaMedica = ?";
-
-    $stmt = mysqli_prepare($vConexion, $sql);
-    if ($stmt === false) {
-        error_log("Error al preparar Modificar_Historia: " . mysqli_error($vConexion));
+function Modificar_Historia($conexion) {
+    if (
+        empty($_POST['IdHistoria']) ||
+        !isset($_POST['Enfermedades']) ||
+        !isset($_POST['Medicamentos']) ||
+        !isset($_POST['Esparcimiento'])
+    ) {
         return false;
     }
 
-    mysqli_stmt_bind_param($stmt, "ssssi", $enfermedades, $medicamentos, $servicios, $esparcimiento, $id);
-    $ok = mysqli_stmt_execute($stmt);
+    $idHistoria = $_POST['IdHistoria'];
+    $enfermedades = implode(',', $_POST['Enfermedades']);
+    $medicamentos = implode(',', $_POST['Medicamentos']);
+    $esparcimiento = implode(',', $_POST['Esparcimiento']);
 
-    if (!$ok) {
-        error_log("Error al ejecutar Modificar_Historia: " . mysqli_stmt_error($stmt));
-    }
+    $sql = "UPDATE historiaMedica
+            SET enfermedades = ?, medicamentos = ?, esparcimiento = ?
+            WHERE idHistoriaMedica = ?";
+    
+    $stmt = mysqli_prepare($conexion, $sql);
+    mysqli_stmt_bind_param($stmt, "sssi", $enfermedades, $medicamentos, $esparcimiento, $idHistoria);
 
-    mysqli_stmt_close($stmt);
-    return $ok;
+    return mysqli_stmt_execute($stmt);
 }
 
 
 
 ?>
+

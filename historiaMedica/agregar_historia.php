@@ -13,19 +13,10 @@ require_once '../funciones/conexion.php';
 $MiConexion = ConexionBD();
 require_once '../funciones/select_general.php';
 
-$idPaciente = isset($_GET['idPaciente']) ? intval($_GET['idPaciente']) : 0;
-
-$servicios = ObtenerServiciosPorPaciente($MiConexion, $idPaciente);
-echo json_encode($servicios);
-
 $ListadoPacientes = Listar_Pacientes($MiConexion);
-$CantidadPacientes = count($ListadoPacientes);
-
 $_SESSION['Estilo'] = 'alert';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    echo "<p>Formulario enviado correctamente.</p>";
-
     if (InsertarHistoria($MiConexion)) {
         $_SESSION['Mensaje'] = 'Historia médica registrada correctamente.';
         $_SESSION['Estilo'] = 'success';
@@ -67,8 +58,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         <select class="form-select" name="Paciente" id="paciente" required>
                             <option value="">Selecciona un paciente</option>
                             <?php foreach ($ListadoPacientes as $p) { ?>
-                                <option value="<?= $p['ID_PACIENTE']; ?>"
-                                    data-dni="<?= $p['DNI']; ?>">
+                                <option value="<?= $p['ID_PACIENTE']; ?>" data-dni="<?= $p['DNI']; ?>">
                                     <?= $p['NOMBRE'] . ' ' . $p['APELLIDO']; ?>
                                 </option>
                             <?php } ?>
@@ -84,13 +74,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     <!-- Enfermedades -->
                     <div class="col-md-6">
                         <label class="form-label">Enfermedades</label>
-                        <input type="text" class="form-control" name="Enfermedades" required>
+                        <div class="input-group mb-2">
+                            <input type="text" id="enfermedadInput" class="form-control" placeholder="Agregar enfermedad">
+                            <button type="button" class="btn btn-outline-secondary" onclick="agregarEnfermedad()">Agregar</button>
+                        </div>
+                        <select class="form-select" name="Enfermedades[]" id="enfermedadesSelect" multiple required></select>
                     </div>
 
                     <!-- Medicamentos -->
                     <div class="col-md-6">
                         <label class="form-label">Medicamentos</label>
-                        <input type="text" class="form-control" name="Medicamentos" required>
+                        <div class="input-group mb-2">
+                            <input type="text" id="medicamentoInput" class="form-control" placeholder="Agregar medicamento">
+                            <button type="button" class="btn btn-outline-secondary" onclick="agregarMedicamento()">Agregar</button>
+                        </div>
+                        <select class="form-select" name="Medicamentos[]" id="medicamentosSelect" multiple required></select>
                     </div>
 
                     <!-- Servicios -->
@@ -102,7 +100,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     <!-- Esparcimiento -->
                     <div class="col-12">
                         <label class="form-label">Esparcimiento</label>
-                        <textarea class="form-control" name="Esparcimiento" rows="2" required></textarea>
+                        <select class="form-select" name="Esparcimiento[]" multiple required>
+                            <option value="taller de dibujo">Taller de dibujo</option>
+                            <option value="taller de musica">Taller de música</option>
+                            <option value="taller de lectura">Taller de lectura</option>
+                            <option value="taller de canto">Taller de canto</option>
+                            <option value="taller de baile">Taller de baile</option>
+                            <option value="yoga">Yoga</option>
+                        </select>
                     </div>
 
                     <!-- Botones -->
@@ -132,11 +137,37 @@ require('../shared/footer.inc.php');
             fetch('servicios_paciente.php?idPaciente=' + pacienteId)
                 .then(response => response.json())
                 .then(data => {
-                    const servicios = data.join(', ');
+                    const servicios = data.map(s => `${s.denominacion} (${s.cantidad} veces)`).join(', ');
                     document.getElementById('servicios').value = servicios;
                 });
         } else {
             document.getElementById('servicios').value = '';
         }
     });
+
+    function agregarEnfermedad() {
+        const input = document.getElementById('enfermedadInput');
+        const select = document.getElementById('enfermedadesSelect');
+        if (input.value.trim() !== '') {
+            const option = document.createElement('option');
+            option.text = input.value;
+            option.value = input.value;
+            option.selected = true;
+            select.add(option);
+            input.value = '';
+        }
+    }
+
+    function agregarMedicamento() {
+        const input = document.getElementById('medicamentoInput');
+        const select = document.getElementById('medicamentosSelect');
+        if (input.value.trim() !== '') {
+            const option = document.createElement('option');
+            option.text = input.value;
+            option.value = input.value;
+            option.selected = true;
+            select.add(option);
+            input.value = '';
+        }
+    }
 </script>
