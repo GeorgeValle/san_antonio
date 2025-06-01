@@ -183,7 +183,7 @@ foreach ($servicios as $s) {
 
                     <div class="col-12">
                         <label class="form-label">Esparcimiento</label>
-                        <select class="form-select" name="Esparcimiento[]" multiple required>
+                        <select class="form-select" name="Esparcimiento[]" id="esparcimientoSelect" multiple required>
                             <?php
                             // Opciones fijas para esparcimiento
                             $opcionesEsparcimiento = [
@@ -206,6 +206,10 @@ foreach ($servicios as $s) {
 
             </div>
         </div>
+        <!-- Select2 CSS -->
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+<!-- Select2 JS -->
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
     </section>
 </main>
 
@@ -243,4 +247,11 @@ function quitarOpcion(selectId) {
         }
     }
 }
+
+document.addEventListener('DOMContentLoaded', function () {
+        $('#esparcimientoSelect').select2({
+            placeholder: 'Selecciona actividades de esparcimiento',
+            width: '100%'
+        });
+    });
 </script>

@@ -614,13 +614,17 @@ function InsertarHistoria($conexion) {
     $idPaciente   = mysqli_real_escape_string($conexion, $_POST['Paciente']);
     $dni          = mysqli_real_escape_string($conexion, $_POST['DNI']);
 
-    $enfermedades = isset($_POST['Enfermedades']) ? implode(', ', $_POST['Enfermedades']) : '';
-    $medicamentos = isset($_POST['Medicamentos']) ? implode(', ', $_POST['Medicamentos']) : '';
-    $esparcimiento = isset($_POST['Esparcimiento']) ? implode(', ', $_POST['Esparcimiento']) : '';
+    if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    // Enfermedades y medicamentos vienen como array de múltiples select
+    $enfermedades = isset($_POST['Enfermedades']) ? $_POST['Enfermedades'] : [];
+    $medicamentos = isset($_POST['Medicamentos']) ? $_POST['Medicamentos'] : [];
+    $esparcimiento = isset($_POST['Esparcimiento']) ? $_POST['Esparcimiento'] : [];
 
-    $enfermedades = mysqli_real_escape_string($conexion, $enfermedades);
-    $medicamentos = mysqli_real_escape_string($conexion, $medicamentos);
-    $esparcimiento = mysqli_real_escape_string($conexion, $esparcimiento);
+    // Convertir arrays a strings separados por coma para guardar en DB
+    $enfermedadesStr = implode(', ', array_map('trim', $enfermedades));
+    $medicamentosStr = implode(', ', array_map('trim', $medicamentos));
+    $esparcimientoStr = implode(', ', array_map('trim', $esparcimiento));
+    }
 
     $lista = ObtenerServiciosPorPaciente($conexion, $idPaciente);
     $serviciosUnicos = [];

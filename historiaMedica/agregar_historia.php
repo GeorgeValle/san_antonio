@@ -100,7 +100,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     <!-- Esparcimiento -->
                     <div class="col-12">
                         <label class="form-label">Esparcimiento</label>
-                        <select class="form-select" name="Esparcimiento[]" multiple required>
+                        <select class="form-select" name="Esparcimiento[]" id="esparcimientoSelect" multiple required>
                             <option value="taller de dibujo">Taller de dibujo</option>
                             <option value="taller de musica">Taller de música</option>
                             <option value="taller de lectura">Taller de lectura</option>
@@ -118,6 +118,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 </form>
             </div>
         </div>
+        <!-- Select2 CSS -->
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+<!-- Select2 JS -->
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
     </section>
 </main>
 
@@ -170,4 +174,11 @@ require('../shared/footer.inc.php');
             input.value = '';
         }
     }
+
+    document.addEventListener('DOMContentLoaded', function () {
+        $('#esparcimientoSelect').select2({
+            placeholder: 'Selecciona actividades de esparcimiento',
+            width: '100%'
+        });
+    });
 </script>

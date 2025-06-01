@@ -70,7 +70,10 @@ $CantidadHistoria = count($ListadoHistoria);
                 <input type="text" class="form-control" name="parametro" id="parametro">
                 </div>
 
-                <style> .btn-xs { padding: 0.25rem 0.5rem; font-size: 0.75rem; line-height: 1.5; border-radius: 0.2rem; } </style>
+                <style> .btn-xs { padding: 0.25rem 0.5rem; font-size: 0.75rem; line-height: 1.5; border-radius: 0.2rem; }  .dropdown-menu {
+    max-height: 200px;
+    overflow-y: auto;
+  }</style>
 
               <div class="col-sm-3 mt-2">
                 <button type="submit" class="btn btn-success btn-xs d-inline-block" value="buscar" name="BotonBuscar">Buscar</button>
