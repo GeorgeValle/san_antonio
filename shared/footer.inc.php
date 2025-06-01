@@ -31,6 +31,5 @@
   <!-- Template Main JS File 2023-->
    
   <script src="../assets/js/main.js"></script>
-  <script src="../assets/js/funciones.js"></script>
-  <script src="../assets/js/ventas.js"></script>
+
 

@@ -42,12 +42,12 @@ $CantidadPacientes = count($ListadoPacientes);
 <main id="main" class="main">
 
 <div class="pagetitle">
-  <h1>Listado Pacientes</h1>
+  <h1>Listado Residentes</h1>
   <nav>
     <ol class="breadcrumb">
       <li class="breadcrumb-item"><a href="../core/index.php">Menu</a></li>
-      <li class="breadcrumb-item">Pacientes</li>
-      <li class="breadcrumb-item active">Listado Pacientes</li>
+      <li class="breadcrumb-item">Residentes</li>
+      <li class="breadcrumb-item active">Listado Residentes</li>
     </ol>
   </nav>
 </div><!-- End Page Title -->
@@ -56,7 +56,7 @@ $CantidadPacientes = count($ListadoPacientes);
     
     <div class="card">
         <div class="card-body">
-          <h5 class="card-title">Listado Pacientes</h5>
+          <h5 class="card-title">Listado Residentes</h5>
           <?php if (!empty($_SESSION['Mensaje'])) { ?>
             <div class="alert alert-<?php echo $_SESSION['Estilo']; ?> alert-dismissable">
               <?php echo $_SESSION['Mensaje'] ?>
@@ -100,39 +100,40 @@ $CantidadPacientes = count($ListadoPacientes);
           </form>
           <!-- Table with stripped rows -->
           <table class="table table-striped">
-            <thead>
-              <tr>
-                <th scope="col">#</th>
-                <th scope="col">Nombre</th>
-                <th scope="col">Telefono</th>
-                <th scope="col">DNI</th>
-                <th scope="col">Acciones</th>
-              </tr>
-            </thead>
-            <tbody>
-                <?php for ($i=0; $i<$CantidadPacientes; $i++) { ?>
-                    <tr>
-                        <th scope="row"><?php echo $i+1; ?></th>
-                        <td><?php echo $ListadoPacientes[$i]['NOMBRE'] . " " . $ListadoPacientes[$i]['APELLIDO']; ?></td>
-                        <td><?php echo $ListadoPacientes[$i]['TELEFONO']; ?></td>
-                        <td><?php echo $ListadoPacientes[$i]['DNI']; ?></td>
-                        <td>
-                          <!-- eliminar la consulta -->
-                          <a href="../pacientes/eliminar_pacientes.php?ID_PACIENTE=<?php echo $ListadoPacientes[$i]['ID_PACIENTE']; ?>" 
-                            title="Eliminar" 
-                            onclick="return confirm('Confirma eliminar este paciente?');">
-                              <i class="bi bi-trash-fill text-danger fs-5"></i>
-                          </a>
+              <thead>
+                  <tr>
+                      <th scope="col">#</th>
+                      <th scope="col">Nombre</th>
+                      <th scope="col">Teléfono</th>
+                      <th scope="col">DNI</th>
+                      <th scope="col">Tipo</th> 
+                      <th scope="col">Acciones</th>
+                  </tr>
+              </thead>
+              <tbody>
+                  <?php for ($i=0; $i<$CantidadPacientes; $i++) { ?>
+                      <tr>
+                          <th scope="row"><?php echo $i+1; ?></th>
+                          <td><?php echo $ListadoPacientes[$i]['NOMBRE'] . " " . $ListadoPacientes[$i]['APELLIDO']; ?></td>
+                          <td><?php echo $ListadoPacientes[$i]['TELEFONO']; ?></td>
+                          <td><?php echo $ListadoPacientes[$i]['DNI']; ?></td>
+                          <td><?php echo !empty($ListadoPacientes[$i]['TIPO_PACIENTE']) ? $ListadoPacientes[$i]['TIPO_PACIENTE'] : 'Sin tipo'; ?></td>
+                          <td>
+                              <!-- eliminar el paciente -->
+                              <a href="../residentes/eliminar_residentes.php?ID_PACIENTE=<?php echo $ListadoPacientes[$i]['ID_PACIENTE']; ?>" 
+                                  title="Eliminar" 
+                                  onclick="return confirm('Confirma eliminar este paciente?');">
+                                  <i class="bi bi-trash-fill text-danger fs-5"></i>
+                              </a>
 
-                          <a href="../pacientes/modificar_pacientes.php?ID_PACIENTE=<?php echo $ListadoPacientes[$i]['ID_PACIENTE']; ?>" 
-                            title="Modificar">
-                            <i class="bi bi-pencil-fill text-warning fs-5"></i>
-                          </a>
-                      
-                        </td>
-                    </tr>
-                <?php } ?>
-            </tbody>
+                              <a href="../residentes/modificar_residentes.php?ID_PACIENTE=<?php echo $ListadoPacientes[$i]['ID_PACIENTE']; ?>" 
+                                  title="Modificar">
+                                  <i class="bi bi-pencil-fill text-warning fs-5"></i>
+                              </a>
+                          </td>
+                      </tr>
+                  <?php } ?>
+              </tbody>
           </table>
           <!-- End Table with stripped rows -->
 

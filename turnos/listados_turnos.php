@@ -77,7 +77,7 @@ if (!empty($_POST['Buscar'])) {
                       <div class="form-check form-check-inline small-text">
                         <input class="form-check-input" type="radio" name="criterio" id="gridRadios1" value="Paciente" checked>
                         <label class="form-check-label" for="gridRadios1">
-                          Paciente
+                          Residente
                         </label>
                       </div>
                       <div class="form-check form-check-inline small-text">
@@ -91,6 +91,11 @@ if (!empty($_POST['Buscar'])) {
                         <label class="form-check-label" for="gridRadios3">
                           Fecha
                       </div>
+                      <div class="form-check form-check-inline small-text">
+                        <input class="form-check-input" type="radio" name="criterio" id="gridRadios3" value="DNI">
+                        <label class="form-check-label" for="gridRadios3">
+                          DNI
+                      </div>
                 </div> 
             </div>
           
@@ -103,7 +108,7 @@ if (!empty($_POST['Buscar'])) {
                 <th scope="col">Fecha</th>
                 <th scope="col">Horario</th>
                 <th scope="col">Tipo de Servicio</th>
-                <th scope="col">Paciente</th>
+                <th scope="col">Residente</th>
                 <th scope="col">Acciones</th>
               </tr>
             </thead>
@@ -122,7 +127,7 @@ if (!empty($_POST['Buscar'])) {
                         <th scope="row"><?php echo $i+1; ?></th>
                         <td><?php echo $ListadoTurnos[$i]['FECHA']; ?></td>
                         <td><?php echo $ListadoTurnos[$i]['HORARIO']; ?></td>
-                        <td><?php echo $ListadoTurnos[$i]['SERVICIO']; ?></td>
+                        <td><?php echo $ListadoTurnos[$i]['SERVICIOS']; ?></td>
                         <td><?php echo $ListadoTurnos[$i]['NOMBRE_PACIENTE']?>, <?php echo $ListadoTurnos[$i]['APELLIDO_PACIENTE']?></td>
                         <td>
                           <!-- eliminar la consulta -->

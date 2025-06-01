@@ -104,11 +104,10 @@ if (!empty($_POST['Registrar'])) {
                         </div>
                     </div>
 
-                    <!-- Campo de Estilista -->
+                                        <!-- Campo de Tipo de Servicio -->
                     <div class="col-12">
-                        <label for="selector" class="form-label">Servicio</label>
-                        <select class="form-select" aria-label="Selector" name="Servicio" id="servicio">
-                            <option selected>Selecciona una opción</option>
+                        <label for="selector" class="form-label">Tipo de Servicio</label>
+                        <select class="js-example-basic-multiple form-select" multiple="multiple" name="TipoServicio[]">
                             <?php for ($i = 0; $i < $CantidadServicios; $i++) { ?>
                                 <option value="<?php echo $ListadoServicios[$i]['ID']; ?>">
                                     <?php echo $ListadoServicios[$i]['DENOMINACION']; ?>
@@ -133,6 +132,13 @@ if (!empty($_POST['Registrar'])) {
 $_SESSION['Mensaje'] = '';
 require('../shared/footer.inc.php'); // Footer
 ?>
+
+<script>
+    // Inicializar Select2
+    $(document).ready(function() {
+        $('.js-example-basic-multiple').select2();
+    });
+</script>
 
 </body>
 </html>

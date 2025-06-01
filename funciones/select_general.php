@@ -6,9 +6,10 @@ function InsertarPacientes($vConexion) {
     $nombre = mysqli_real_escape_string($vConexion, $_POST['Nombre']);
     $apellido = mysqli_real_escape_string($vConexion, $_POST['Apellido']);
     $telefono = mysqli_real_escape_string($vConexion, $_POST['Telefono']);
+    $tipoPaciente = mysqli_real_escape_string($vConexion, $_POST['idTipoPaciente']);
     
-    $SQL_Insert = "INSERT INTO pacientes (nombre, apellido, telefono, dni)
-                  VALUES ('$nombre', '$apellido', '$telefono', '$dni')";
+    $SQL_Insert = "INSERT INTO pacientes (nombre, apellido, telefono, dni, idTipoPaciente)
+                  VALUES ('$nombre', '$apellido', '$telefono', '$dni', '$tipoPaciente')";
     
     if (!mysqli_query($vConexion, $SQL_Insert)) {
         die('<h4>Error al intentar insertar el registro.</h4>');
@@ -30,6 +31,9 @@ function Validar_Paciente($vConexion){
     }
     if (strlen($_POST['DNI']) < 8) {
         $_SESSION['Mensaje'].='Debes ingresar un DNI con al menos 8 caracteres. <br />';
+    }
+    if (strlen($_POST['idTipoPaciente']) == 'Seleccione un tipo') {
+        $_SESSION['Mensaje'].='Debes ingresar un tipo de paciente. <br />';
     }
         
     $dni = mysqli_real_escape_string($vConexion, $_POST['DNI']);
@@ -64,6 +68,9 @@ function Validar_Paciente_Modificar(){
     if (strlen($_POST['DNI']) < 8) {
         $_SESSION['Mensaje'].='Debes ingresar un DNI con al menos 8 caracteres. <br />';
     }
+        if (empty($_POST['idTipoPaciente'])) {
+        $_SESSION['Mensaje'] .= 'Debe seleccionar un tipo de paciente.<br>';
+    }
 
     //con esto aseguramos que limpiamos espacios y limpiamos de caracteres de codigo ingresados
     foreach($_POST as $Id=>$Valor){
@@ -74,76 +81,76 @@ function Validar_Paciente_Modificar(){
     return $_SESSION['Mensaje'];
 }
 
-function Listar_Pacientes($vConexion) {
+function Listar_Pacientes($conexion) {
+    $sql = "SELECT p.idPaciente AS ID_PACIENTE, 
+                   p.nombre AS NOMBRE, 
+                   p.apellido AS APELLIDO,
+                   p.telefono AS TELEFONO,
+                   p.dni AS DNI,
+                   p.idTipoPaciente AS ID_TIPO_PACIENTE,
+                   tp.denominacion AS TIPO_PACIENTE
+            FROM pacientes p
+            LEFT JOIN tipo_paciente tp ON p.idTipoPaciente = tp.idTipoPaciente
+            ORDER BY p.apellido, p.nombre";
+    
+    $resultado = mysqli_query($conexion, $sql);
+    $pacientes = array();
+    
+    if ($resultado) {
+        while ($fila = mysqli_fetch_assoc($resultado)) {
+            $pacientes[] = $fila;
+        }
+    }
+    
+    return $pacientes;
+}
 
+function ListarTiposPaciente($MiConexion) {
     $Listado=array();
 
-      //1) genero la consulta que deseo
-        $SQL = "SELECT * FROM pacientes";
+    //1) genero la consulta que deseo
+    $SQL = "SELECT idTipoPaciente, denominacion FROM tipo_paciente ORDER BY idTipoPaciente";
 
-        //2) a la conexion actual le brindo mi consulta, y el resultado lo entrego a variable $rs
-        $rs = mysqli_query($vConexion, $SQL);
-        
-        //3) el resultado deberá organizarse en una matriz, entonces lo recorro
-        $i=0;
-        while ($data = mysqli_fetch_array($rs)) {
-            $Listado[$i]['ID_PACIENTE'] = $data['idPaciente'];
-            $Listado[$i]['NOMBRE'] = $data['nombre'];
-            $Listado[$i]['APELLIDO'] = $data['apellido'];
-            $Listado[$i]['TELEFONO'] = $data['telefono'];
-            $Listado[$i]['DNI'] = $data['dni'];
-            $i++;
-        }
+    //2) a la conexion actual le brindo mi consulta, y el resultado lo entrego a variable $rs
+    $rs = mysqli_query($MiConexion, $SQL);
+
+    //3) el resultado deberá organizarse en una matriz, entonces lo recorro
+    $i = 0;
+    while ($data = mysqli_fetch_array($rs)) {
+        $Listado[$i]['id_tipo_paciente'] = $data['idTipoPaciente'];
+        $Listado[$i]['denominacion'] = $data['denominacion'];
+        $i++;
+    }
 
     //devuelvo el listado generado en el array $Listado. (Podra salir vacio o con datos)..
     return $Listado;
 }
 
-function Listar_Pacientes_Parametro($vConexion,$criterio,$parametro) {
-    $Listado=array();
-
-      //1) genero la consulta que deseo segun el parametro
-        $sql = "";
-        switch ($criterio) { 
-            case 'Nombre': 
-        // Divide el parámetro en partes (nombre y apellido)
-        $partes = explode(' ', trim($parametro));
-        $nombre = isset($partes[0]) ? $partes[0] : '';
-        $apellido = isset($partes[1]) ? $partes[1] : '';
-        
-        if ($nombre && $apellido) {
-            // Si hay nombre y apellido (ej: "karen ba")
-            $sql = "SELECT * FROM pacientes 
-                    WHERE (nombre LIKE '$nombre%' AND apellido LIKE '$apellido%')";
-        } else {
-            // Si solo hay un término (ej: "baz")
-            $sql = "SELECT * FROM pacientes 
-                    WHERE (nombre LIKE '%$parametro%' OR apellido LIKE '%$parametro%')";
-        }
-        break;
-        case 'DNI':
-        $sql = "SELECT * FROM pacientes WHERE dni LIKE '%$parametro%'";
-        break;
-        case 'Telefono':
-        $sql = "SELECT * FROM pacientes WHERE telefono LIKE '%$parametro%'";
-        break;
-        }    
-        //2) a la conexion actual le brindo mi consulta, y el resultado lo entrego a variable $rs
-        $rs = mysqli_query($vConexion, $sql);
-        
-        //3) el resultado deberá organizarse en una matriz, entonces lo recorro
-        $i=0;
-        while ($data = mysqli_fetch_array($rs)) {
-            $Listado[$i]['ID_PACIENTE'] = $data['idPaciente'];
-            $Listado[$i]['NOMBRE'] = $data['nombre'];
-            $Listado[$i]['APELLIDO'] = $data['apellido'];
-            $Listado[$i]['TELEFONO'] = $data['telefono'];
-            $Listado[$i]['DNI'] = $data['dni'];
-            $i++;
-        }
-
-    //devuelvo el listado generado en el array $Listado. (Podra salir vacio o con datos)..
-    return $Listado;
+function Listar_Pacientes_Parametro($conexion, $criterio, $parametro) {
+    $sql = "SELECT p.idPaciente AS ID_PACIENTE, 
+                   p.nombre AS NOMBRE, 
+                   p.apellido AS APELLIDO,
+                   p.telefono AS TELEFONO,
+                   p.dni AS DNI,
+                   p.idTipoPaciente AS ID_TIPO_PACIENTE,
+                   tp.denominacion AS TIPO_PACIENTE
+            FROM pacientes p
+            LEFT JOIN tipos_paciente tp ON p.idTipoPaciente = tp.id_tipo_paciente
+            WHERE p.$criterio LIKE ?
+            ORDER BY p.apellido, p.nombre";
+    
+    $stmt = mysqli_prepare($conexion, $sql);
+    $parametro_like = "%$parametro%";
+    mysqli_stmt_bind_param($stmt, "s", $parametro_like);
+    mysqli_stmt_execute($stmt);
+    $resultado = mysqli_stmt_get_result($stmt);
+    
+    $pacientes = array();
+    while ($fila = mysqli_fetch_assoc($resultado)) {
+        $pacientes[] = $fila;
+    }
+    
+    return $pacientes;
 }
 
 function Eliminar_Paciente($vConexion, $vIdConsulta) {
@@ -165,7 +172,11 @@ function Eliminar_Paciente($vConexion, $vIdConsulta) {
 }
 
 function Datos_Paciente($conexion, $idPaciente) {
-    $sql = "SELECT nombre AS NOMBRE, dni AS DNI FROM pacientes WHERE idPaciente = ?";
+    $sql = "SELECT nombre AS NOMBRE, dni AS DNI, telefono AS TELEFONO, 
+                   apellido AS APELLIDO, idPaciente AS ID_PACIENTE,
+                   idTipoPaciente AS ID_TIPO_PACIENTE 
+            FROM pacientes 
+            WHERE idPaciente = ?";
     $stmt = mysqli_prepare($conexion, $sql);
     mysqli_stmt_bind_param($stmt, "i", $idPaciente);
     mysqli_stmt_execute($stmt);
@@ -173,26 +184,27 @@ function Datos_Paciente($conexion, $idPaciente) {
     return mysqli_fetch_assoc($resultado);
 }
 
-function Modificar_Paciente($vConexion) {
-    $nombre = mysqli_real_escape_string($vConexion, $_POST['Nombre']);
-    $apellido = mysqli_real_escape_string($vConexion, $_POST['Apellido']);
-    $telefono = mysqli_real_escape_string($vConexion, $_POST['Telefono']);
-    $dni = mysqli_real_escape_string($vConexion, $_POST['DNI']);
-    $idPaciente = mysqli_real_escape_string($vConexion, $_POST['IdPaciente']);
-
-    $SQL_MiConsulta = "UPDATE pacientes 
-    SET nombre = '$nombre',
-    apellido = '$apellido',
-    telefono = '$telefono',
-    dni = '$dni'
-    WHERE idPaciente = '$idPaciente'";
-
-    if ( mysqli_query($vConexion, $SQL_MiConsulta) != false) {
-        return true;
-    }else {
-        return false;
-    }
+function Modificar_Paciente($conexion) {
+    // Asegúrate de incluir idTipoPaciente en la consulta SQL
+    $sql = "UPDATE pacientes SET 
+            nombre = ?, 
+            apellido = ?, 
+            telefono = ?, 
+            dni = ?,
+            idTipoPaciente = ?
+            WHERE idPaciente = ?";
     
+    $stmt = mysqli_prepare($conexion, $sql);
+    mysqli_stmt_bind_param($stmt, "sssiii", 
+        $_POST['Nombre'],
+        $_POST['Apellido'],
+        $_POST['Telefono'],
+        $_POST['DNI'],
+        $_POST['idTipoPaciente'],
+        $_POST['IdPaciente']
+    );
+    
+    return mysqli_stmt_execute($stmt);
 }
 
 function Listar_Servicios($vConexion) {
@@ -220,76 +232,96 @@ function Listar_Servicios($vConexion) {
 }
 
 function InsertarTurnos($vConexion) {
-    // 1. Escapar los datos para prevenir inyección SQL
-    $idPaciente = mysqli_real_escape_string($vConexion, $_POST['Paciente']);
-    $idServicio = mysqli_real_escape_string($vConexion, $_POST['Servicio']);
-    $fecha = mysqli_real_escape_string($vConexion, $_POST['Fecha']);
-    $hora = mysqli_real_escape_string($vConexion, $_POST['Horario']);
-
-    // 2. Crear la consulta SQL
-    $SQL_Insert = "INSERT INTO turnos (
-        idPaciente, 
-        idServicio, 
-        fecha, 
-        hora
-    ) VALUES (
-        '$idPaciente',
-        '$idServicio',
-        '$fecha',
-        '$hora'
-    )";
-
-    // 3. Ejecutar la consulta
-    if (!mysqli_query($vConexion, $SQL_Insert)) {
-        // Registrar el error para depuración
-        error_log("Error al insertar turno: " . mysqli_error($vConexion));
+    // Iniciar transacción para asegurar integridad de datos
+    mysqli_begin_transaction($vConexion);
+    
+    try {
+        // 1. Escapar datos básicos del turno
+        $idPaciente = mysqli_real_escape_string($vConexion, $_POST['Paciente']);
+        $fecha = mysqli_real_escape_string($vConexion, $_POST['Fecha']);
+        $hora = mysqli_real_escape_string($vConexion, $_POST['Horario']);
+        
+        // 2. Insertar el turno principal
+        $SQL_Insert = "INSERT INTO turnos (idPaciente, fecha, horario) 
+                      VALUES ('$idPaciente', '$fecha', '$hora')";
+        
+        if (!mysqli_query($vConexion, $SQL_Insert)) {
+            throw new Exception("Error al insertar turno: " . mysqli_error($vConexion));
+        }
+        
+        // 3. Obtener el ID del turno recién insertado
+        $idTurno = mysqli_insert_id($vConexion);
+        
+        // 4. Insertar los servicios seleccionados en detalle_turno
+        if (!empty($_POST['TipoServicio']) && is_array($_POST['TipoServicio'])) {
+            foreach ($_POST['TipoServicio'] as $idServicio) {
+                $idServicio = mysqli_real_escape_string($vConexion, $idServicio);
+                $SQL_Detalle = "INSERT INTO detalle_turno (idTurno, idServicio) 
+                               VALUES ('$idTurno', '$idServicio')";
+                
+                if (!mysqli_query($vConexion, $SQL_Detalle)) {
+                    throw new Exception("Error al insertar detalle: " . mysqli_error($vConexion));
+                }
+            }
+        } else {
+            throw new Exception("Debe seleccionar al menos un servicio");
+        }
+        
+        // Confirmar transacción si todo salió bien
+        mysqli_commit($vConexion);
+        return true;
+        
+    } catch (Exception $e) {
+        // Revertir transacción en caso de error
+        mysqli_rollback($vConexion);
+        error_log($e->getMessage());
+        $_SESSION['Mensaje'] = "Error al registrar el turno: " . $e->getMessage();
         return false;
     }
-
-    return true;
 }
 
 function Listar_Turnos($vConexion) {
     $Listado = array();
 
-    // Consulta SQL modificada
+    // Consulta SQL modificada para obtener múltiples servicios
     $SQL = "SELECT 
                 T.idTurno,
                 T.fecha,
-                T.hora,
-                P.NOMBRE AS nombre_paciente,
-                P.APELLIDO AS apellido_paciente,
-                S.DENOMINACION AS servicio,
-                T.idPaciente,
-                T.idServicio
+                T.horario,
+                P.nombre AS nombre_paciente,
+                P.apellido AS apellido_paciente,
+                GROUP_CONCAT(S.denominacion SEPARATOR ', ') AS servicios,
+                T.idPaciente
             FROM 
                 turnos T
             INNER JOIN 
                 pacientes P ON T.idPaciente = P.idPaciente
-            INNER JOIN 
-                servicios S ON T.idServicio = S.idServicio
+            LEFT JOIN 
+                detalle_turno DT ON T.idTurno = DT.idTurno
+            LEFT JOIN 
+                servicios S ON DT.idServicio = S.idServicio
+            GROUP BY 
+                T.idTurno, T.fecha, T.horario, P.nombre, P.apellido, T.idPaciente
             ORDER BY 
                 T.fecha DESC, 
-                T.hora";
+                T.horario";
 
     $rs = mysqli_query($vConexion, $SQL);
     
     if (!$rs) {
-        // Manejo de error en la consulta
         error_log("Error en Listar_Turnos: " . mysqli_error($vConexion));
-        return $Listado; // Devuelve array vacío si hay error
+        return $Listado;
     }
 
     $i = 0;
     while ($data = mysqli_fetch_assoc($rs)) {
         $Listado[$i]['ID_TURNO'] = $data['idTurno'];
         $Listado[$i]['FECHA'] = $data['fecha'];
-        $Listado[$i]['HORARIO'] = $data['hora'];
+        $Listado[$i]['HORARIO'] = $data['horario'];
         $Listado[$i]['NOMBRE_PACIENTE'] = $data['nombre_paciente'];
         $Listado[$i]['APELLIDO_PACIENTE'] = $data['apellido_paciente'];
-        $Listado[$i]['SERVICIO'] = $data['servicio'];
+        $Listado[$i]['SERVICIOS'] = $data['servicios'] ?? 'Sin servicios';
         $Listado[$i]['ID_PACIENTE'] = $data['idPaciente'];
-        $Listado[$i]['ID_SERVICIO'] = $data['idServicio'];
         $i++;
     }
 
@@ -298,80 +330,51 @@ function Listar_Turnos($vConexion) {
 
 function Listar_Turnos_Parametro($vConexion, $criterio, $parametro) {
     $Listado = array();
+    $parametro = mysqli_real_escape_string($vConexion, $parametro);
 
-    // Construir la consulta según el criterio
+    // Base de la consulta con GROUP_CONCAT para múltiples servicios
+    $baseSQL = "SELECT 
+                    T.idTurno,
+                    T.fecha,
+                    T.horario,
+                    P.nombre AS nombre_paciente,
+                    P.apellido AS apellido_paciente,
+                    GROUP_CONCAT(S.denominacion SEPARATOR ', ') AS servicios,
+                    T.idPaciente
+                FROM 
+                    turnos T
+                INNER JOIN 
+                    pacientes P ON T.idPaciente = P.idPaciente
+                LEFT JOIN 
+                    detalle_turno DT ON T.idTurno = DT.idTurno
+                LEFT JOIN 
+                    servicios S ON DT.idServicio = S.idServicio
+                %WHERE%
+                GROUP BY 
+                    T.idTurno, T.fecha, T.horario, P.nombre, P.apellido, T.idPaciente
+                ORDER BY 
+                    T.fecha DESC, 
+                    T.horario";
+
+    // Construir la condición WHERE según el criterio
     switch ($criterio) {
         case 'Paciente':
-            $SQL = "SELECT 
-                        T.idTurno,
-                        T.fecha,
-                        T.hora,
-                        P.NOMBRE AS nombre_paciente,
-                        P.APELLIDO AS apellido_paciente,
-                        S.DENOMINACION AS servicio,
-                        T.idPaciente,
-                        T.idServicio
-                    FROM 
-                        turnos T
-                    INNER JOIN 
-                        pacientes P ON T.idPaciente = P.idPaciente
-                    INNER JOIN 
-                        servicios S ON T.idServicio = S.idServicio
-                    WHERE 
-                        P.NOMBRE LIKE '%$parametro%' OR P.APELLIDO LIKE '%$parametro%'
-                    ORDER BY 
-                        T.fecha DESC, 
-                        T.hora";
+            $where = "WHERE P.nombre LIKE '%$parametro%' OR P.apellido LIKE '%$parametro%'";
             break;
         case 'Servicio':
-            $SQL = "SELECT 
-                        T.idTurno,
-                        T.fecha,
-                        T.hora,
-                        P.NOMBRE AS nombre_paciente,
-                        P.APELLIDO AS apellido_paciente,
-                        S.DENOMINACION AS servicio,
-                        T.idPaciente,
-                        T.idServicio
-                    FROM 
-                        turnos T
-                    INNER JOIN 
-                        pacientes P ON T.idPaciente = P.idPaciente
-                    INNER JOIN 
-                        servicios S ON T.idServicio = S.idServicio
-                    WHERE 
-                        S.DENOMINACION LIKE '%$parametro%'
-                    ORDER BY 
-                        T.fecha DESC, 
-                        T.hora";
+            $where = "WHERE S.denominacion LIKE '%$parametro%'";
             break;
         case 'Fecha':
-            $SQL = "SELECT 
-                        T.idTurno,
-                        T.fecha,
-                        T.hora,
-                        P.NOMBRE AS nombre_paciente,
-                        P.APELLIDO AS apellido_paciente,
-                        S.DENOMINACION AS servicio,
-                        T.idPaciente,
-                        T.idServicio
-                    FROM 
-                        turnos T
-                    INNER JOIN 
-                        pacientes P ON T.idPaciente = P.idPaciente
-                    INNER JOIN 
-                        servicios S ON T.idServicio = S.idServicio
-                    WHERE 
-                        T.fecha LIKE '%$parametro%'
-                    ORDER BY 
-                        T.fecha DESC, 
-                        T.hora";
+            $where = "WHERE T.fecha LIKE '%$parametro%'";
+            break;
+        case 'DNI':
+            $where = "WHERE P.dni LIKE '%$parametro%'";
             break;
         default:
-            // Si no hay criterio válido, devolver array vacío
             return $Listado;
     }
 
+    $SQL = str_replace('%WHERE%', $where, $baseSQL);
     $rs = mysqli_query($vConexion, $SQL);
 
     if (!$rs) {
@@ -383,12 +386,11 @@ function Listar_Turnos_Parametro($vConexion, $criterio, $parametro) {
     while ($data = mysqli_fetch_assoc($rs)) {
         $Listado[$i]['ID_TURNO'] = $data['idTurno'];
         $Listado[$i]['FECHA'] = $data['fecha'];
-        $Listado[$i]['HORARIO'] = $data['hora'];
+        $Listado[$i]['HORARIO'] = $data['horario'];
         $Listado[$i]['NOMBRE_PACIENTE'] = $data['nombre_paciente'];
         $Listado[$i]['APELLIDO_PACIENTE'] = $data['apellido_paciente'];
-        $Listado[$i]['SERVICIO'] = $data['servicio'];
+        $Listado[$i]['SERVICIOS'] = $data['servicios'] ?? 'Sin servicios';
         $Listado[$i]['ID_PACIENTE'] = $data['idPaciente'];
-        $Listado[$i]['ID_SERVICIO'] = $data['idServicio'];
         $i++;
     }
 
@@ -449,26 +451,28 @@ function Modificar_Turno($conexion, $datos) {
     return mysqli_query($conexion, $SQL);
 }
 
-function Validar_Turno(){
-    $_SESSION['Mensaje']='';
+function Validar_Turno() {
+    $_SESSION['Mensaje'] = '';
+    
     if (strlen($_POST['Fecha']) < 4) {
-        $_SESSION['Mensaje'].='Debes seleccionar una fecha. <br />';
+        $_SESSION['Mensaje'] .= 'Debes seleccionar una fecha. <br />';
+        $_SESSION['Estilo'] = 'warning';
     }
     if (strlen($_POST['Horario']) < 4) {
-        $_SESSION['Mensaje'].='Debes seleccionar un horario. <br />';
-    }
-    if ($_POST['Servicio'] == 'Selecciona una opcion') {
-        $_SESSION['Mensaje'].='Debes seleccionar un Tipo de Servicio. <br />';
+        $_SESSION['Mensaje'] .= 'Debes seleccionar un horario. <br />';
+        $_SESSION['Estilo'] = 'warning';
     }
     if ($_POST['Paciente'] == 'Selecciona una opcion') {
-        $_SESSION['Mensaje'].='Debes seleccionar un Cliente. <br />';
+        $_SESSION['Mensaje'] .= 'Debes seleccionar un Cliente. <br />';
+        $_SESSION['Estilo'] = 'warning';
+    }
+    
+    // Validación para el campo de TipoServicio[] (selección múltiple)
+    if (empty($_POST['TipoServicio']) || !is_array($_POST['TipoServicio']) || count($_POST['TipoServicio']) == 0) {
+        $_SESSION['Mensaje'] .= 'Debes seleccionar al menos un Tipo de Servicio. <br />';
+        $_SESSION['Estilo'] = 'warning';
     }
 
-    //con esto aseguramos que limpiamos espacios y limpiamos de caracteres de codigo ingresados
-    //foreach($_POST as $Id=>$Valor){
-    //    $_POST[$Id] = trim($_POST[$Id]);
-    //    $_POST[$Id] = strip_tags($_POST[$Id]);
-    //}
 
     return $_SESSION['Mensaje'];
 }
@@ -624,14 +628,14 @@ function InsertarHistoria($conexion) {
 
     $lista = ObtenerServiciosPorPaciente($conexion, $idPaciente);
     $serviciosUnicos = [];
-foreach ($lista as $s) {
-    $denominacion = $s['denominacion'];
-    if (!in_array($denominacion, $serviciosUnicos)) {
-        $serviciosUnicos[] = $denominacion;
+    foreach ($lista as $s) {
+        $denominacion = $s['denominacion'];
+        if (!in_array($denominacion, $serviciosUnicos)) {
+            $serviciosUnicos[] = $denominacion;
+        }
     }
-}
-$textoServicios = implode(', ', $serviciosUnicos);
-$textoServicios = mysqli_real_escape_string($conexion, $textoServicios);
+    $textoServicios = implode(', ', $serviciosUnicos);
+    $textoServicios = mysqli_real_escape_string($conexion, $textoServicios);
     $textoServicios = mysqli_real_escape_string($conexion, $textoServicios);
 
     $sql = "INSERT INTO historiamedica
@@ -709,8 +713,6 @@ function Modificar_Historia($conexion) {
 
     return mysqli_stmt_execute($stmt);
 }
-
-
 
 ?>
 
