@@ -91,7 +91,7 @@ function Listar_Pacientes($conexion) {
                    tp.denominacion AS TIPO_PACIENTE
             FROM pacientes p
             LEFT JOIN tipo_paciente tp ON p.idTipoPaciente = tp.idTipoPaciente
-            ORDER BY p.apellido, p.nombre";
+            ORDER BY p.idPaciente DESC";
     
     $resultado = mysqli_query($conexion, $sql);
     $pacientes = array();
@@ -137,7 +137,7 @@ function Listar_Pacientes_Parametro($conexion, $criterio, $parametro) {
             FROM pacientes p
             LEFT JOIN tipos_paciente tp ON p.idTipoPaciente = tp.id_tipo_paciente
             WHERE p.$criterio LIKE ?
-            ORDER BY p.apellido, p.nombre";
+            ORDER BY p.idPaciente DESC";
     
     $stmt = mysqli_prepare($conexion, $sql);
     $parametro_like = "%$parametro%";
@@ -283,25 +283,27 @@ function InsertarTurnos($vConexion) {
 function Listar_Turnos($vConexion) {
     $Listado = array();
 
-    // Consulta SQL modificada para obtener múltiples servicios
+    // Consulta SQL modificada para obtener servicios individuales
     $SQL = "SELECT 
                 T.idTurno,
                 T.fecha,
                 T.horario,
+                TP.denominacion AS tipo_paciente,
                 P.nombre AS nombre_paciente,
                 P.apellido AS apellido_paciente,
-                GROUP_CONCAT(S.denominacion SEPARATOR ', ') AS servicios,
-                T.idPaciente
+                T.idPaciente,
+                S.idServicio,
+                S.denominacion AS nombre_servicio
             FROM 
                 turnos T
             INNER JOIN 
                 pacientes P ON T.idPaciente = P.idPaciente
             LEFT JOIN 
+                tipo_paciente TP ON P.idTipoPaciente = TP.idTipoPaciente
+            LEFT JOIN 
                 detalle_turno DT ON T.idTurno = DT.idTurno
             LEFT JOIN 
                 servicios S ON DT.idServicio = S.idServicio
-            GROUP BY 
-                T.idTurno, T.fecha, T.horario, P.nombre, P.apellido, T.idPaciente
             ORDER BY 
                 T.fecha DESC, 
                 T.horario";
@@ -313,17 +315,34 @@ function Listar_Turnos($vConexion) {
         return $Listado;
     }
 
-    $i = 0;
+    // Agrupar los resultados por turno
+    $turnos = array();
     while ($data = mysqli_fetch_assoc($rs)) {
-        $Listado[$i]['ID_TURNO'] = $data['idTurno'];
-        $Listado[$i]['FECHA'] = $data['fecha'];
-        $Listado[$i]['HORARIO'] = $data['horario'];
-        $Listado[$i]['NOMBRE_PACIENTE'] = $data['nombre_paciente'];
-        $Listado[$i]['APELLIDO_PACIENTE'] = $data['apellido_paciente'];
-        $Listado[$i]['SERVICIOS'] = $data['servicios'] ?? 'Sin servicios';
-        $Listado[$i]['ID_PACIENTE'] = $data['idPaciente'];
-        $i++;
+        $idTurno = $data['idTurno'];
+        
+        if (!isset($turnos[$idTurno])) {
+            $turnos[$idTurno] = array(
+                'ID_TURNO' => $data['idTurno'],
+                'FECHA' => $data['fecha'],
+                'HORARIO' => $data['horario'],
+                'NOMBRE_PACIENTE' => $data['nombre_paciente'],
+                'APELLIDO_PACIENTE' => $data['apellido_paciente'],
+                'TIPO_PACIENTE' => $data['tipo_paciente'],
+                'ID_PACIENTE' => $data['idPaciente'],
+                'SERVICIOS' => array()
+            );
+        }
+        
+        if (!empty($data['idServicio'])) {
+            $turnos[$idTurno]['SERVICIOS'][] = array(
+                'id' => $data['idServicio'],
+                'nombre' => $data['nombre_servicio']
+            );
+        }
     }
+
+    // Convertir a formato de lista indexada
+    $Listado = array_values($turnos);
 
     return $Listado;
 }
@@ -332,26 +351,28 @@ function Listar_Turnos_Parametro($vConexion, $criterio, $parametro) {
     $Listado = array();
     $parametro = mysqli_real_escape_string($vConexion, $parametro);
 
-    // Base de la consulta con GROUP_CONCAT para múltiples servicios
+    // Base de la consulta
     $baseSQL = "SELECT 
                     T.idTurno,
                     T.fecha,
                     T.horario,
+                    TP.denominacion AS tipo_paciente,
                     P.nombre AS nombre_paciente,
                     P.apellido AS apellido_paciente,
-                    GROUP_CONCAT(S.denominacion SEPARATOR ', ') AS servicios,
-                    T.idPaciente
+                    T.idPaciente,
+                    S.idServicio,
+                    S.denominacion AS nombre_servicio
                 FROM 
                     turnos T
                 INNER JOIN 
                     pacientes P ON T.idPaciente = P.idPaciente
                 LEFT JOIN 
+                    tipo_paciente TP ON P.idTipoPaciente = TP.idTipoPaciente
+                LEFT JOIN 
                     detalle_turno DT ON T.idTurno = DT.idTurno
                 LEFT JOIN 
                     servicios S ON DT.idServicio = S.idServicio
                 %WHERE%
-                GROUP BY 
-                    T.idTurno, T.fecha, T.horario, P.nombre, P.apellido, T.idPaciente
                 ORDER BY 
                     T.fecha DESC, 
                     T.horario";
@@ -382,17 +403,34 @@ function Listar_Turnos_Parametro($vConexion, $criterio, $parametro) {
         return $Listado;
     }
 
-    $i = 0;
+    // Agrupar los resultados por turno
+    $turnos = array();
     while ($data = mysqli_fetch_assoc($rs)) {
-        $Listado[$i]['ID_TURNO'] = $data['idTurno'];
-        $Listado[$i]['FECHA'] = $data['fecha'];
-        $Listado[$i]['HORARIO'] = $data['horario'];
-        $Listado[$i]['NOMBRE_PACIENTE'] = $data['nombre_paciente'];
-        $Listado[$i]['APELLIDO_PACIENTE'] = $data['apellido_paciente'];
-        $Listado[$i]['SERVICIOS'] = $data['servicios'] ?? 'Sin servicios';
-        $Listado[$i]['ID_PACIENTE'] = $data['idPaciente'];
-        $i++;
+        $idTurno = $data['idTurno'];
+        
+        if (!isset($turnos[$idTurno])) {
+            $turnos[$idTurno] = array(
+                'ID_TURNO' => $data['idTurno'],
+                'FECHA' => $data['fecha'],
+                'HORARIO' => $data['horario'],
+                'NOMBRE_PACIENTE' => $data['nombre_paciente'],
+                'APELLIDO_PACIENTE' => $data['apellido_paciente'],
+                'TIPO_PACIENTE' => $data['tipo_paciente'],
+                'ID_PACIENTE' => $data['idPaciente'],
+                'SERVICIOS' => array()
+            );
+        }
+        
+        if (!empty($data['idServicio'])) {
+            $turnos[$idTurno]['SERVICIOS'][] = array(
+                'id' => $data['idServicio'],
+                'nombre' => $data['nombre_servicio']
+            );
+        }
     }
+
+    // Convertir a formato de lista indexada
+    $Listado = array_values($turnos);
 
     return $Listado;
 }
