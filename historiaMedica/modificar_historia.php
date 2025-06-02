@@ -35,26 +35,28 @@ if (!$historia) {
     exit;
 }
 
-// Función para obtener servicios del paciente
 function ObtenerServiciosPorPaciente($conexion, $idPaciente) {
-    $sql = "SELECT s.denominacion, COUNT(*) AS cantidad
-            FROM turnos t
-            INNER JOIN servicios s ON t.idServicio = s.idServicio
-            WHERE t.idPaciente = ?
-            GROUP BY s.denominacion";
-    $stmt = mysqli_prepare($conexion, $sql);
-    if ($stmt === false) {
-        error_log("Error al preparar ObtenerServiciosPorPaciente: " . mysqli_error($conexion));
-        return [];
-    }
-    mysqli_stmt_bind_param($stmt, "i", $idPaciente);
-    mysqli_stmt_execute($stmt);
-    $resultado = mysqli_stmt_get_result($stmt);
     $servicios = [];
-    while ($fila = mysqli_fetch_assoc($resultado)) {
-        $servicios[] = $fila;
+
+    $SQL = "SELECT s.denominacion
+            FROM turnos t
+            INNER JOIN detalle_turno dt ON t.idTurno = dt.idTurno
+            INNER JOIN servicios s ON dt.idServicio = s.idServicio
+            WHERE t.idPaciente = ?";
+
+    if ($stmt = $conexion->prepare($SQL)) {
+        $stmt->bind_param("i", $idPaciente);
+        if ($stmt->execute()) {
+            $resultado = $stmt->get_result();
+            while ($fila = $resultado->fetch_assoc()) {
+                $servicios[] = $fila;
+            }
+        }
+        $stmt->close();
+    } else {
+        error_log("Error preparando la consulta: " . $conexion->error);
     }
-    mysqli_stmt_close($stmt);
+
     return $servicios;
 }
 

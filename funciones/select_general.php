@@ -745,8 +745,21 @@ function Listar_Historia_Parametro($vConexion, $criterio, $parametro) {
             $where = "h.medicamentos LIKE '%$parametro%'";
             break;
         case 'Servicios':
-            $where = "h.servicios LIKE '%$parametro%'";
-            break;
+    $SQL = "SELECT DISTINCT 
+                h.idHistoriaMedica,
+                p.nombre AS nombre_paciente,
+                p.apellido AS apellido_paciente,
+                p.dni,
+                h.enfermedades,
+                h.medicamentos,
+                h.esparcimiento
+            FROM historiamedica h
+            INNER JOIN pacientes p ON h.idPaciente = p.idPaciente
+            INNER JOIN turnos t ON t.idPaciente = p.idPaciente
+            INNER JOIN servicios s ON s.idServicio = t.idServicio
+            WHERE s.denominacion LIKE '%$parametro%'";
+    break;
+
         case 'Esparcimiento':
             $where = "h.esparcimiento LIKE '%$parametro%'";
             break;
@@ -824,15 +837,15 @@ function InsertarHistoria($conexion) {
         return false;
     }
     mysqli_stmt_bind_param(
-        $stmt,
-        "isssss",
-        $idPaciente,
-        $dni,
-        $enfermedades,
-        $medicamentos,
-        $textoServicios,
-        $esparcimiento
-    );
+    $stmt,
+    "isssss",
+    $idPaciente,
+    $dni,
+    $enfermedadesStr,
+    $medicamentosStr,
+    $textoServicios,
+    $esparcimientoStr
+);
     $ok = mysqli_stmt_execute($stmt);
     if (!$ok) {
         error_log("Error al ejecutar InsertarHistoria: " . mysqli_stmt_error($stmt));
@@ -842,20 +855,30 @@ function InsertarHistoria($conexion) {
 }
 
 function ObtenerServiciosPorPaciente($conexion, $idPaciente) {
-    $SQL = "SELECT s.denominacion
-            FROM turnos t
-            INNER JOIN servicios s ON t.idServicio = s.idServicio
-            WHERE t.idPaciente = $idPaciente";
-
-    $rs = mysqli_query($conexion, $SQL);
     $servicios = [];
 
-    while ($data = mysqli_fetch_assoc($rs)) {
-        $servicios[] = $data;
+    $SQL = "SELECT s.denominacion
+            FROM turnos t
+            INNER JOIN detalle_turno dt ON t.idTurno = dt.idTurno
+            INNER JOIN servicios s ON dt.idServicio = s.idServicio
+            WHERE t.idPaciente = ?";
+
+    if ($stmt = $conexion->prepare($SQL)) {
+        $stmt->bind_param("i", $idPaciente);
+        if ($stmt->execute()) {
+            $resultado = $stmt->get_result();
+            while ($fila = $resultado->fetch_assoc()) {
+                $servicios[] = $fila;
+            }
+        }
+        $stmt->close();
+    } else {
+        error_log("Error preparando la consulta: " . $conexion->error);
     }
 
     return $servicios;
 }
+
 
 function Datos_Historia($conexion, $idHistoria) {
     $sql = "SELECT * FROM historiaMedica WHERE idHistoriaMedica = ?";
