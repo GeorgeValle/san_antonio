@@ -77,7 +77,7 @@ if (!empty($_POST['Buscar'])) {
                       <div class="form-check form-check-inline small-text">
                         <input class="form-check-input" type="radio" name="criterio" id="gridRadios1" value="Paciente" checked>
                         <label class="form-check-label" for="gridRadios1">
-                          Paciente
+                          Residente
                         </label>
                       </div>
                       <div class="form-check form-check-inline small-text">
@@ -91,6 +91,11 @@ if (!empty($_POST['Buscar'])) {
                         <label class="form-check-label" for="gridRadios3">
                           Fecha
                       </div>
+                      <div class="form-check form-check-inline small-text">
+                        <input class="form-check-input" type="radio" name="criterio" id="gridRadios3" value="DNI">
+                        <label class="form-check-label" for="gridRadios3">
+                          DNI
+                      </div>
                 </div> 
             </div>
           
@@ -102,15 +107,16 @@ if (!empty($_POST['Buscar'])) {
                 <th scope="col">#</th>
                 <th scope="col">Fecha</th>
                 <th scope="col">Horario</th>
-                <th scope="col">Tipo de Servicio</th>
-                <th scope="col">Paciente</th>
+                <th scope="col">Servicio</th>
+                <th scope="col">Residente</th>
+                <th scope="col">Tipo</th>
                 <th scope="col">Acciones</th>
               </tr>
             </thead>
             <tbody>
                 <?php 
                 //borro la variable anterior de descarga
-                $_SESSION['Descarga']="";
+                //$_SESSION['Descarga']="";
                 for ($i=0; $i<$CantidadTurnos; $i++) { 
 
 
@@ -122,8 +128,24 @@ if (!empty($_POST['Buscar'])) {
                         <th scope="row"><?php echo $i+1; ?></th>
                         <td><?php echo $ListadoTurnos[$i]['FECHA']; ?></td>
                         <td><?php echo $ListadoTurnos[$i]['HORARIO']; ?></td>
-                        <td><?php echo $ListadoTurnos[$i]['SERVICIO']; ?></td>
+                        <td>
+                            <div class="dropdown">
+                                <button class="btn btn-sm btn-outline-primary dropdown-toggle" type="button" id="dropdownServicios<?php echo $i; ?>" data-bs-toggle="dropdown" aria-expanded="false">
+                                    Ver servicios (<?php echo count($ListadoTurnos[$i]['SERVICIOS']); ?>)
+                                </button>
+                                <ul class="dropdown-menu" aria-labelledby="dropdownServicios<?php echo $i; ?>">
+                                    <?php if (!empty($ListadoTurnos[$i]['SERVICIOS'])): ?>
+                                        <?php foreach ($ListadoTurnos[$i]['SERVICIOS'] as $servicio): ?>
+                                            <li><span class="dropdown-item-text"><?php echo htmlspecialchars($servicio['nombre']); ?></span></li>
+                                        <?php endforeach; ?>
+                                    <?php else: ?>
+                                        <li><span class="dropdown-item-text">Sin servicios</span></li>
+                                    <?php endif; ?>
+                                </ul>
+                            </div>
+                        </td>
                         <td><?php echo $ListadoTurnos[$i]['NOMBRE_PACIENTE']?>, <?php echo $ListadoTurnos[$i]['APELLIDO_PACIENTE']?></td>
+                        <td><?php echo $ListadoTurnos[$i]['TIPO_PACIENTE']?></td>
                         <td>
                           <!-- eliminar la consulta -->
                           <a href="../turnos/eliminar_turnos.php?ID_TURNO=<?php echo $ListadoTurnos[$i]['ID_TURNO']; ?>" 
@@ -142,7 +164,7 @@ if (!empty($_POST['Buscar'])) {
                 <?php 
                 } 
                 //le agrego un espacio cuando termino de cargar
-                $_SESSION['Descarga'] .= "\n";
+                //$_SESSION['Descarga'] .= "\n";
                 ?>
             </tbody>
           </table>

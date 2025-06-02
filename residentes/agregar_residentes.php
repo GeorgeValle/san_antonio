@@ -14,6 +14,7 @@ require_once '../funciones/conexion.php';
 require_once '../funciones/select_general.php';
 $MiConexion=ConexionBD(); 
 
+$tipos_paciente = ListarTiposPaciente($MiConexion);
 $Mensaje='';
 $Estilo='warning';
 if (!empty($_POST['BotonRegistrar'])) {
@@ -33,19 +34,19 @@ if (!empty($_POST['BotonRegistrar'])) {
   <main id="main" class="main">
 
     <div class="pagetitle">
-      <h1>Pacientes</h1>
+      <h1>Residentes</h1>
       <nav>
         <ol class="breadcrumb">
           <li class="breadcrumb-item"><a href="../core/index.php">Menu</a></li>
-          <li class="breadcrumb-item">Pacientes</li>
-          <li class="breadcrumb-item active">Agregar Pacientes</li>
+          <li class="breadcrumb-item">Residentes</li>
+          <li class="breadcrumb-item active">Agregar Residentes</li>
         </ol>
       </nav>
     </div><!-- End Page Title -->
     <section class="section">
           <div class="card">
             <div class="card-body">
-              <h5 class="card-title">Agregar Pacientes</h5>
+              <h5 class="card-title">Agregar Residentes</h5>
 
               <!-- Horizontal Form -->
               <form method='post'>
@@ -81,6 +82,20 @@ if (!empty($_POST['BotonRegistrar'])) {
                     <input type="number" class="form-control" name="DNI" id="dni"
                     value="<?php echo !empty($_POST['DNI']) ? $_POST['DNI'] : ''; ?>">
                   </div>
+                </div>
+                <div class="row mb-3">
+                    <label for="inputTipoPaciente" class="col-sm-2 col-form-label">Tipo de Paciente</label>
+                    <div class="col-sm-10">
+                        <select class="form-select" name="idTipoPaciente" id="inputTipoPaciente" required>
+                            <option value="">Seleccione un tipo</option>
+                            <?php foreach ($tipos_paciente as $tipo): ?>
+                                <option value="<?php echo $tipo['id_tipo_paciente']; ?>"
+                                    <?php echo (!empty($_POST['idTipoPaciente']) && $_POST['idTipoPaciente'] == $tipo['id_tipo_paciente']) ? 'selected' : ''; ?>>
+                                    <?php echo htmlspecialchars($tipo['denominacion']); ?>
+                                </option>
+                            <?php endforeach; ?>
+                        </select>
+                    </div>
                 </div>
                 <div class="text-center">
                   <button type="submit" class="btn btn-primary" value="Registrar" name="BotonRegistrar">Agregar</button>

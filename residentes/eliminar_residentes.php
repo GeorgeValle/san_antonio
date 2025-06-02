@@ -20,6 +20,6 @@
     }
     
    
-    header('Location: ../pacientes/listados_pacientes.php');
+    header('Location: ../residentes/listados_residentes.php');
     exit;
 ?>
