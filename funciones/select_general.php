@@ -672,7 +672,7 @@ function Listar_Historia($vConexion) {
         $idPaciente = $data['idPaciente'];
 
         // Obtener servicios actualizados desde turnos
-        $serviciosTurnos = ObtenerServiciosPorPaciente($vConexion, $idPaciente);
+        $serviciosTurnos = ObtenerServiciosPorPaciente1($vConexion, $idPaciente);
         $serviciosUnicos = [];
         foreach ($serviciosTurnos as $servicio) {
             $denominacion = trim($servicio['denominacion']);
@@ -842,6 +842,24 @@ function ObtenerServiciosPorPaciente($conexion, $idPaciente) {
             FROM turnos t
             INNER JOIN servicios s ON t.idServicio = s.idServicio
             WHERE t.idPaciente = $idPaciente";
+
+    $rs = mysqli_query($conexion, $SQL);
+    $servicios = [];
+
+    while ($data = mysqli_fetch_assoc($rs)) {
+        $servicios[] = $data;
+    }
+
+    return $servicios;
+}
+
+function ObtenerServiciosPorPaciente1($conexion, $idPaciente) {
+    $SQL = "SELECT s.denominacion
+            FROM turnos t
+            INNER JOIN detalle_turno dt ON t.idTurno = dt.idTurno
+            INNER JOIN servicios s ON dt.idServicio = s.idServicio
+            WHERE t.idPaciente = $idPaciente
+            GROUP BY s.denominacion"; 
 
     $rs = mysqli_query($conexion, $SQL);
     $servicios = [];
