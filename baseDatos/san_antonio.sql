@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 01-06-2025 a las 05:40:55
+-- Tiempo de generación: 03-06-2025 a las 02:32:29
 -- Versión del servidor: 10.4.32-MariaDB
 -- Versión de PHP: 8.2.12
 
@@ -54,10 +54,10 @@ CREATE TABLE `historiamedica` (
   `idHistoriaMedica` int(11) NOT NULL,
   `idPaciente` int(11) NOT NULL,
   `dni` int(10) NOT NULL,
-  `enfermedades` varchar(50) NOT NULL,
-  `medicamentos` varchar(50) NOT NULL,
-  `servicios` varchar(50) NOT NULL,
-  `esparcimiento` varchar(50) NOT NULL
+  `enfermedades` varchar(300) NOT NULL,
+  `medicamentos` varchar(300) NOT NULL,
+  `servicios` varchar(300) NOT NULL,
+  `esparcimiento` varchar(300) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
@@ -65,9 +65,7 @@ CREATE TABLE `historiamedica` (
 --
 
 INSERT INTO `historiamedica` (`idHistoriaMedica`, `idPaciente`, `dni`, `enfermedades`, `medicamentos`, `servicios`, `esparcimiento`) VALUES
-(9, 2, 38103736, 'Tos', 'Paracetamol', 'psicologia (3 veces), servicio 1 (1 veces)', 'jmiomokja'),
-(10, 10, 38410257, 'Fiebre', 'Paracetamol', 'servicio 1 (1 veces), servicio 3 (1 veces)', 'jnjn'),
-(11, 13, 17664875, 'Artritis', 'Naproxeno', 'psicologia (1 veces)', 'Aire libre');
+(15, 10, 38410257, 'Dolor de cabeza, Tos, fiebre, prueba, prueba 2, prueba 3, prueba 4, prueba 5', 'Hola, Hol', 'enfermero, medico clinico, nutricionista', 'taller de dibujo, taller de musica, taller de lectura, taller de canto, taller de baile, yoga');
 
 -- --------------------------------------------------------
 
@@ -242,7 +240,7 @@ ALTER TABLE `detalle_turno`
 -- AUTO_INCREMENT de la tabla `historiamedica`
 --
 ALTER TABLE `historiamedica`
-  MODIFY `idHistoriaMedica` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
+  MODIFY `idHistoriaMedica` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=16;
 
 --
 -- AUTO_INCREMENT de la tabla `pacientes`
