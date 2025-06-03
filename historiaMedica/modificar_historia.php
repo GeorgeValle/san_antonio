@@ -143,7 +143,7 @@ $esparcimientoArray = stringToArray($historia['esparcimiento']);
                         <textarea class="form-control" rows="2" readonly>
 <?php
 foreach ($servicios as $s) {
-    echo htmlspecialchars($s['denominacion'] . ' (' . $s['cantidad'] . ' veces)') . "\n";
+    echo htmlspecialchars($s['denominacion']) . "\n";
 }
 ?>
                         </textarea>

@@ -840,8 +840,10 @@ function InsertarHistoria($conexion) {
 function ObtenerServiciosPorPaciente($conexion, $idPaciente) {
     $SQL = "SELECT s.denominacion
             FROM turnos t
-            INNER JOIN servicios s ON t.idServicio = s.idServicio
-            WHERE t.idPaciente = $idPaciente";
+            INNER JOIN detalle_turno dt ON t.idTurno = dt.idTurno
+            INNER JOIN servicios s ON dt.idServicio = s.idServicio
+            WHERE t.idPaciente = $idPaciente
+            GROUP BY s.denominacion"; 
 
     $rs = mysqli_query($conexion, $SQL);
     $servicios = [];
