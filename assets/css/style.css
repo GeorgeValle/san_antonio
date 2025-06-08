@@ -1116,6 +1116,6 @@ main{
 }
 
 .form-check-input:checked {
-    background-color: var(--color-primario); /* Verde */
+    background-color: var(--color-primario);
     border-color: var(--color-primario-1);
 }

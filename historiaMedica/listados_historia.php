@@ -143,64 +143,80 @@ $CantidadHistoria = count($ListadoHistoria);
     <td><?php echo $ListadoHistoria[$i]['DNI']; ?></td>
 
     <!-- Enfermedades -->
+<?php
+$enfermedadesData = $ListadoHistoria[$i]['ENFERMEDADES'];
+$enfermedades = is_array($enfermedadesData) ? $enfermedadesData : explode(',', $enfermedadesData);
+?>
 <td>
     <div class="dropdown">
         <button class="dropdown-toggle p-0 border-0 bg-transparent text-dark"
                 type="button" data-bs-toggle="dropdown" aria-expanded="false"
-        style="text-decoration: none; cursor: pointer;">
-            <?php echo !empty($ListadoHistoria[$i]['ENFERMEDADES'][0]) ? $ListadoHistoria[$i]['ENFERMEDADES'][0] : 'Ninguno'; ?>
+                style="text-decoration: none; cursor: pointer;">
+            <?php echo !empty(trim($enfermedades[0])) ? trim($enfermedades[0]) : 'Ninguno'; ?>
         </button>
         <ul class="dropdown-menu">
-            <?php foreach ($ListadoHistoria[$i]['ENFERMEDADES'] as $item) { ?>
-                <li><span class="dropdown-item-text"><?php echo $item; ?></span></li>
+            <?php foreach ($enfermedades as $item) { ?>
+                <li><span class="dropdown-item-text"><?php echo trim($item); ?></span></li>
             <?php } ?>
         </ul>
     </div>
 </td>
 
 <!-- Medicamentos -->
+<?php
+$medicamentosData = $ListadoHistoria[$i]['MEDICAMENTOS'];
+$medicamentos = is_array($medicamentosData) ? $medicamentosData : explode(',', $medicamentosData);
+?>
 <td>
     <div class="dropdown">
         <button class="dropdown-toggle p-0 border-0 bg-transparent text-dark"
                 type="button" data-bs-toggle="dropdown" aria-expanded="false"
-        style="text-decoration: none; cursor: pointer;">
-            <?php echo !empty($ListadoHistoria[$i]['MEDICAMENTOS'][0]) ? $ListadoHistoria[$i]['MEDICAMENTOS'][0] : 'Ninguno'; ?>
+                style="text-decoration: none; cursor: pointer;">
+            <?php echo !empty(trim($medicamentos[0])) ? trim($medicamentos[0]) : 'Ninguno'; ?>
         </button>
         <ul class="dropdown-menu">
-            <?php foreach ($ListadoHistoria[$i]['MEDICAMENTOS'] as $item) { ?>
-                <li><span class="dropdown-item-text"><?php echo $item; ?></span></li>
+            <?php foreach ($medicamentos as $item) { ?>
+                <li><span class="dropdown-item-text"><?php echo trim($item); ?></span></li>
             <?php } ?>
         </ul>
     </div>
 </td>
 
 <!-- Servicios -->
+<?php
+$serviciosData = $ListadoHistoria[$i]['SERVICIOS'];
+$servicios = is_array($serviciosData) ? $serviciosData : explode(',', $serviciosData);
+?>
 <td>
     <div class="dropdown">
         <button class="dropdown-toggle p-0 border-0 bg-transparent text-dark"
-        type="button" data-bs-toggle="dropdown" aria-expanded="false"
-        style="text-decoration: none; cursor: pointer;">
-    <?php echo !empty($ListadoHistoria[$i]['SERVICIOS'][0]) ? $ListadoHistoria[$i]['SERVICIOS'][0] : 'Ninguno'; ?>
-</button>
+                type="button" data-bs-toggle="dropdown" aria-expanded="false"
+                style="text-decoration: none; cursor: pointer;">
+            <?php echo !empty(trim($servicios[0])) ? trim($servicios[0]) : 'Ninguno'; ?>
+        </button>
         <ul class="dropdown-menu">
-            <?php foreach ($ListadoHistoria[$i]['SERVICIOS'] as $item) { ?>
-                <li><span class="dropdown-item-text"><?php echo $item; ?></span></li>
+            <?php foreach ($servicios as $item) { ?>
+                <li><span class="dropdown-item-text"><?php echo trim($item); ?></span></li>
             <?php } ?>
         </ul>
     </div>
 </td>
 
 <!-- Esparcimiento -->
+<?php
+$esparcimientoData = $ListadoHistoria[$i]['ESPARCIMIENTO'];
+$esparcimiento = is_array($esparcimientoData) ? $esparcimientoData : explode(',', $esparcimientoData);
+?>
 <td>
     <div class="dropdown">
-       <button class="dropdown-toggle p-0 border-0 bg-transparent text-dark"
+        <button class="dropdown-toggle p-0 border-0 bg-transparent text-dark"
                 type="button" data-bs-toggle="dropdown" aria-expanded="false"
-        style="text-decoration: none; cursor: pointer;">
-            <?php echo !empty($ListadoHistoria[$i]['ESPARCIMIENTO'][0]) ? $ListadoHistoria[$i]['ESPARCIMIENTO'][0] : 'Ninguno'; ?>
+                style="text-decoration: none; cursor: pointer;">
+            <?php echo !empty(trim($esparcimiento[0])) ? trim($esparcimiento[0]) : 'Ninguno'; ?>
         </button>
         <ul class="dropdown-menu">
-            <?php foreach ($ListadoHistoria[$i]['ESPARCIMIENTO'] as $item) { ?>
-                <li><span class="dropdown-item-text"><?php echo $item; ?></span></li>
+            <?php foreach ($esparcimiento as $item) { ?>
+                <li><span class="dropdown-item-text"><?php echo trim($item); ?></span></li>
             <?php } ?>
         </ul>
     </div>

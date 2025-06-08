@@ -3,9 +3,9 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 08-06-2025 a las 05:26:35
--- Versión del servidor: 10.4.32-MariaDB
--- Versión de PHP: 8.2.12
+-- Tiempo de generación: 08-06-2025 a las 23:34:11
+-- Versión del servidor: 10.4.28-MariaDB
+-- Versión de PHP: 8.2.4
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -111,7 +111,32 @@ CREATE TABLE `historiamedica` (
 --
 
 INSERT INTO `historiamedica` (`idHistoriaMedica`, `idPaciente`, `dni`, `enfermedades`, `medicamentos`, `servicios`, `esparcimiento`) VALUES
-(15, 10, 38410257, 'Dolor de cabeza, Tos, fiebre, prueba, prueba 2, prueba 3, prueba 4, prueba 5', 'Hola, Hol', 'enfermero, medico clinico, nutricionista', 'taller de dibujo, taller de musica, taller de lectura, taller de canto, taller de baile, yoga');
+(15, 10, 38410257, 'Dolor de cabeza, Tos, fiebre, prueba, prueba 2, prueba 3, prueba 4, prueba 5', 'Hola, Hol', 'enfermero, medico clinico, nutricionista', 'taller de dibujo, taller de musica, taller de lectura, taller de canto, taller de baile, yoga'),
+(16, 37, 42012345, 'prueba 1, prueba 2', 'prueba 1, prueba 2', 'psicologo, psiquiatria', 'taller de dibujo, taller de musica'),
+(17, 36, 41901234, 'Alergias', 'Atorvastatina', 'Neurología', 'taller de dibujo, taller de musica'),
+(18, 10, 38410257, 'Gastritis', 'Losartán', 'Psicología', 'taller de lectura, taller de canto'),
+(19, 2, 38103736, 'Diabetes', 'Atorvastatina', 'Psicología', 'taller de musica, taller de baile'),
+(20, 31, 41456789, 'Migraña', 'Losartán', 'Endocrinología', 'taller de baile'),
+(21, 18, 40123456, 'Asma', 'Metformina', 'Endocrinología', 'taller de canto, yoga'),
+(22, 27, 41012345, 'Diabetes', 'Levotiroxina', 'Psicología', 'taller de lectura, taller de baile'),
+(23, 11, 31548752, 'Migraña', 'Omeprazol', 'Neurología', 'taller de musica, yoga'),
+(24, 35, 41890123, 'Artritis', 'Losartán', 'Cardiología', 'taller de musica, taller de lectura, taller de baile'),
+(25, 21, 40456789, 'Asma', 'Levotiroxina', 'Nutrición', 'taller de dibujo, taller de lectura, taller de baile'),
+(26, 33, 41678901, 'Ansiedad', 'Loratadina', 'Alergología', 'taller de lectura, yoga'),
+(27, 20, 40345678, 'Gastritis', 'Omeprazol', 'Nutrición', 'taller de lectura'),
+(28, 32, 41567890, 'Ansiedad', 'Ibuprofeno', 'Nutrición', 'taller de musica, taller de baile'),
+(29, 34, 41789012, 'Migraña', 'Salbutamol', 'Endocrinología', 'taller de canto, yoga'),
+(30, 22, 40567890, 'Artritis', 'Metformina', 'Neumología', 'taller de canto'),
+(31, 24, 40789012, 'Gastritis', 'Omeprazol', 'Neurología', 'taller de dibujo'),
+(32, 23, 40678901, 'Artritis', 'Diclofenac', 'Alergología', 'taller de lectura'),
+(33, 29, 41234567, 'Hipertensión', 'Metformina', 'Neumología', 'yoga'),
+(34, 37, 42012345, 'Hipotiroidismo', 'Loratadina', 'Gastroenterología', 'taller de musica, taller de baile'),
+(35, 26, 40901234, 'Colesterol alto', 'Levotiroxina', 'Nutrición', 'taller de musica, taller de canto'),
+(36, 13, 17664875, 'Hipertensión', 'Ibuprofeno', 'Cardiología', 'taller de musica, taller de baile'),
+(37, 19, 40234567, 'Migraña', 'Loratadina', 'Nutrición', 'taller de musica, taller de canto'),
+(38, 30, 41345678, 'Ansiedad', 'Atorvastatina', 'Endocrinología', 'taller de lectura, yoga'),
+(39, 25, 40890123, 'Alergias', 'Diclofenac', 'Gastroenterología', 'taller de musica, taller de canto'),
+(40, 28, 41123456, 'Hipertensión', 'Clonazepam', 'Gastroenterología', 'taller de musica, taller de lectura');
 
 -- --------------------------------------------------------
 
@@ -334,7 +359,7 @@ ALTER TABLE `detalle_turno`
 -- AUTO_INCREMENT de la tabla `historiamedica`
 --
 ALTER TABLE `historiamedica`
-  MODIFY `idHistoriaMedica` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=16;
+  MODIFY `idHistoriaMedica` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=48;
 
 --
 -- AUTO_INCREMENT de la tabla `pacientes`
