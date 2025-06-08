@@ -18,37 +18,53 @@ function InsertarPacientes($vConexion) {
     return true;
 }
 
-function Validar_Paciente($vConexion){
-    $_SESSION['Mensaje']='';
-    if (strlen($_POST['Nombre']) < 3) {
-        $_SESSION['Mensaje'].='Debes ingresar un nombre con al menos 3 caracteres. <br />';
+function Validar_Paciente($vConexion) {
+    $_SESSION['Mensaje'] = '';
+    
+    // Validación del Nombre
+    $nombre = trim($_POST['Nombre']);
+    if (strlen($nombre) < 3) {
+        $_SESSION['Mensaje'] .= 'Debes ingresar un nombre con al menos 3 caracteres. <br />';
+    } elseif (!preg_match('/^[a-zA-ZáéíóúÁÉÍÓÚñÑüÜ\s]+$/', $nombre)) {
+        $_SESSION['Mensaje'] .= 'El nombre solo puede contener letras y espacios. <br />';
     }
-    if (strlen($_POST['Apellido']) < 3) {
-        $_SESSION['Mensaje'].='Debes ingresar un apellido con al menos 3 caracteres. <br />';
+    
+    // Validación del Apellido
+    $apellido = trim($_POST['Apellido']);
+    if (strlen($apellido) < 3) {
+        $_SESSION['Mensaje'] .= 'Debes ingresar un apellido con al menos 3 caracteres. <br />';
+    } elseif (!preg_match('/^[a-zA-ZáéíóúÁÉÍÓÚñÑüÜ\s]+$/', $apellido)) {
+        $_SESSION['Mensaje'] .= 'El apellido solo puede contener letras y espacios. <br />';
     }
+    
+    // Validación del Teléfono
     if (strlen($_POST['Telefono']) < 3) {
-        $_SESSION['Mensaje'].='Debes ingresar un telefono con al menos 3 caracteres. <br />';
+        $_SESSION['Mensaje'] .= 'Debes ingresar un teléfono con al menos 3 caracteres. <br />';
     }
+    
+    // Validación del DNI
     if (strlen($_POST['DNI']) < 8) {
-        $_SESSION['Mensaje'].='Debes ingresar un DNI con al menos 8 caracteres. <br />';
+        $_SESSION['Mensaje'] .= 'Debes ingresar un DNI con al menos 8 caracteres. <br />';
     }
-    if (strlen($_POST['idTipoPaciente']) == 'Seleccione un tipo') {
-        $_SESSION['Mensaje'].='Debes ingresar un tipo de paciente. <br />';
+    
+    // Validación del Tipo de Paciente
+    if ($_POST['idTipoPaciente'] == 'Seleccione un tipo') {
+        $_SESSION['Mensaje'] .= 'Debes seleccionar un tipo de paciente. <br />';
     }
-        
+    
+    // Validación de DNI único
     $dni = mysqli_real_escape_string($vConexion, $_POST['DNI']);
     $SQL_Check = "SELECT idPaciente FROM pacientes WHERE dni = '$dni' LIMIT 1";
     $resultado = mysqli_query($vConexion, $SQL_Check);
     
     if (mysqli_num_rows($resultado) > 0) {
-        // Si existe un paciente con ese dni, retornamos un error
-        $_SESSION['Mensaje'].='Ya existe un cliente registrado con este DNI';
+        $_SESSION['Mensaje'] .= 'Ya existe un paciente registrado con este DNI. <br />';
     }
 
-    //con esto aseguramos que limpiamos espacios y limpiamos de caracteres de codigo ingresados
-    foreach($_POST as $Id=>$Valor){
-        $_POST[$Id] = trim($_POST[$Id]);
-        $_POST[$Id] = strip_tags($_POST[$Id]);
+    // Limpieza de todos los campos
+    foreach($_POST as $Id => $Valor) {
+        $_POST[$Id] = trim($Valor);
+        $_POST[$Id] = strip_tags($Valor);
     }
 
     return $_SESSION['Mensaje'];
@@ -56,18 +72,29 @@ function Validar_Paciente($vConexion){
 
 function Validar_Paciente_Modificar(){
     $_SESSION['Mensaje']='';
-    if (strlen($_POST['Nombre']) < 3) {
-        $_SESSION['Mensaje'].='Debes ingresar un nombre con al menos 3 caracteres. <br />';
+
+    $nombre = trim($_POST['Nombre']);
+    if (strlen($nombre) < 3) {
+        $_SESSION['Mensaje'] .= 'Debes ingresar un nombre con al menos 3 caracteres. <br />';
+    } elseif (!preg_match('/^[a-zA-ZáéíóúÁÉÍÓÚñÑüÜ\s]+$/', $nombre)) {
+        $_SESSION['Mensaje'] .= 'El nombre solo puede contener letras y espacios. <br />';
     }
-    if (strlen($_POST['Apellido']) < 3) {
-        $_SESSION['Mensaje'].='Debes ingresar un apellido con al menos 3 caracteres. <br />';
+    
+    $apellido = trim($_POST['Apellido']);
+    if (strlen($apellido) < 3) {
+        $_SESSION['Mensaje'] .= 'Debes ingresar un apellido con al menos 3 caracteres. <br />';
+    } elseif (!preg_match('/^[a-zA-ZáéíóúÁÉÍÓÚñÑüÜ\s]+$/', $apellido)) {
+        $_SESSION['Mensaje'] .= 'El apellido solo puede contener letras y espacios. <br />';
     }
+
     if (strlen($_POST['Telefono']) < 3) {
         $_SESSION['Mensaje'].='Debes ingresar un telefono con al menos 3 caracteres. <br />';
     }
+
     if (strlen($_POST['DNI']) < 8) {
         $_SESSION['Mensaje'].='Debes ingresar un DNI con al menos 8 caracteres. <br />';
     }
+    
         if (empty($_POST['idTipoPaciente'])) {
         $_SESSION['Mensaje'] .= 'Debe seleccionar un tipo de paciente.<br>';
     }
@@ -79,6 +106,27 @@ function Validar_Paciente_Modificar(){
     }
 
     return $_SESSION['Mensaje'];
+}
+
+function ListarTiposPaciente($MiConexion) {
+    $Listado=array();
+
+    //1) genero la consulta que deseo
+    $SQL = "SELECT idTipoPaciente, denominacion FROM tipo_paciente ORDER BY idTipoPaciente";
+
+    //2) a la conexion actual le brindo mi consulta, y el resultado lo entrego a variable $rs
+    $rs = mysqli_query($MiConexion, $SQL);
+
+    //3) el resultado deberá organizarse en una matriz, entonces lo recorro
+    $i = 0;
+    while ($data = mysqli_fetch_array($rs)) {
+        $Listado[$i]['id_tipo_paciente'] = $data['idTipoPaciente'];
+        $Listado[$i]['denominacion'] = $data['denominacion'];
+        $i++;
+    }
+
+    //devuelvo el listado generado en el array $Listado. (Podra salir vacio o con datos)..
+    return $Listado;
 }
 
 function Listar_Pacientes($conexion) {
@@ -105,51 +153,50 @@ function Listar_Pacientes($conexion) {
     return $pacientes;
 }
 
-function ListarTiposPaciente($MiConexion) {
-    $Listado=array();
+function Listar_Pacientes_Parametro($conexion, $criterio, $parametro) {
 
-    //1) genero la consulta que deseo
-    $SQL = "SELECT idTipoPaciente, denominacion FROM tipo_paciente ORDER BY idTipoPaciente";
-
-    //2) a la conexion actual le brindo mi consulta, y el resultado lo entrego a variable $rs
-    $rs = mysqli_query($MiConexion, $SQL);
-
-    //3) el resultado deberá organizarse en una matriz, entonces lo recorro
-    $i = 0;
-    while ($data = mysqli_fetch_array($rs)) {
-        $Listado[$i]['id_tipo_paciente'] = $data['idTipoPaciente'];
-        $Listado[$i]['denominacion'] = $data['denominacion'];
-        $i++;
+    if ($criterio === 'nombre') {
+        $sql = "SELECT p.idPaciente AS ID_PACIENTE, 
+                       p.nombre AS NOMBRE, 
+                       p.apellido AS APELLIDO,
+                       p.telefono AS TELEFONO,
+                       p.dni AS DNI,
+                       p.idTipoPaciente AS ID_TIPO_PACIENTE,
+                       tp.denominacion AS TIPO_PACIENTE
+                FROM pacientes p
+                LEFT JOIN tipo_paciente tp ON p.idTipoPaciente = tp.idTipoPaciente
+                WHERE p.nombre LIKE ? 
+                   OR p.apellido LIKE ? 
+                   OR CONCAT(p.nombre, ' ', p.apellido) LIKE ?
+                ORDER BY p.idPaciente DESC";
+        $parametro_like = "%$parametro%";
+        $stmt = mysqli_prepare($conexion, $sql);
+        mysqli_stmt_bind_param($stmt, "sss", $parametro_like, $parametro_like, $parametro_like);
+    } else {
+        $sql = "SELECT p.idPaciente AS ID_PACIENTE, 
+                       p.nombre AS NOMBRE, 
+                       p.apellido AS APELLIDO,
+                       p.telefono AS TELEFONO,
+                       p.dni AS DNI,
+                       p.idTipoPaciente AS ID_TIPO_PACIENTE,
+                       tp.denominacion AS TIPO_PACIENTE
+                FROM pacientes p
+                LEFT JOIN tipo_paciente tp ON p.idTipoPaciente = tp.idTipoPaciente
+                WHERE p.$criterio LIKE ?
+                ORDER BY p.idPaciente DESC";
+        $parametro_like = "%$parametro%";
+        $stmt = mysqli_prepare($conexion, $sql);
+        mysqli_stmt_bind_param($stmt, "s", $parametro_like);
     }
 
-    //devuelvo el listado generado en el array $Listado. (Podra salir vacio o con datos)..
-    return $Listado;
-}
-
-function Listar_Pacientes_Parametro($conexion, $criterio, $parametro) {
-    $sql = "SELECT p.idPaciente AS ID_PACIENTE, 
-                   p.nombre AS NOMBRE, 
-                   p.apellido AS APELLIDO,
-                   p.telefono AS TELEFONO,
-                   p.dni AS DNI,
-                   p.idTipoPaciente AS ID_TIPO_PACIENTE,
-                   tp.denominacion AS TIPO_PACIENTE
-            FROM pacientes p
-            LEFT JOIN tipos_paciente tp ON p.idTipoPaciente = tp.id_tipo_paciente
-            WHERE p.$criterio LIKE ?
-            ORDER BY p.idPaciente DESC";
-    
-    $stmt = mysqli_prepare($conexion, $sql);
-    $parametro_like = "%$parametro%";
-    mysqli_stmt_bind_param($stmt, "s", $parametro_like);
     mysqli_stmt_execute($stmt);
     $resultado = mysqli_stmt_get_result($stmt);
-    
+
     $pacientes = array();
     while ($fila = mysqli_fetch_assoc($resultado)) {
         $pacientes[] = $fila;
     }
-    
+
     return $pacientes;
 }
 

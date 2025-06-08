@@ -40,6 +40,7 @@ if (!empty($_POST['BotonModificarCliente'])) {
         $DatosPacienteActual['NOMBRE'] = !empty($_POST['Nombre']) ? $_POST['Nombre'] :'';
         $DatosPacienteActual['APELLIDO'] = !empty($_POST['Apellido']) ? $_POST['Apellido'] :'';
         $DatosPacienteActual['TELEFONO'] = !empty($_POST['Telefono']) ? $_POST['Telefono'] :'';
+        $DatosPacienteActual['DNI'] = !empty($_POST['DNI']) ? $_POST['DNI'] :'';
     }
 
 }else if (!empty($_GET['ID_PACIENTE'])) {

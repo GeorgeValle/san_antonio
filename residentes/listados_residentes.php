@@ -78,18 +78,18 @@ $CantidadPacientes = count($ListadoPacientes);
               </div>
               <div class="col-sm-5 mt-2">
                     <div class="form-check form-check-inline small-text">
-                      <input class="form-check-input" type="radio" name="gridRadios" id="gridRadios1" value="Nombre" checked>
+                      <input class="form-check-input" type="radio" name="gridRadios" id="gridRadios1" value="nombre" checked>
                       <label class="form-check-label" for="gridRadios1">
                         Nombre
                       </label>
                     </div>
                     <div class="form-check form-check-inline small-text">
-                      <input class="form-check-input" type="radio" name="gridRadios" id="gridRadios3" value="Telefono">
+                      <input class="form-check-input" type="radio" name="gridRadios" id="gridRadios3" value="telefono">
                       <label class="form-check-label" for="gridRadios3">
                         Tel.
                     </div>
                     <div class="form-check form-check-inline small-text">
-                      <input class="form-check-input" type="radio" name="gridRadios" id="gridRadios4" value="DNI">
+                      <input class="form-check-input" type="radio" name="gridRadios" id="gridRadios4" value="dni">
                       <label class="form-check-label" for="gridRadios4">
                         DNI
                     </div>
