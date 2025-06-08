@@ -112,7 +112,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
                     <!-- Botones -->
                     <div class="text-center">
-                        <button class="btn btn-primary" type="submit" name="Registrar">Registrar</button>
+                        <button class="btn btn-personalizado" type="submit" name="Registrar">Registrar</button>
                         <button type="reset" class="btn btn-secondary">Limpiar Campos</button>
                     </div>
                 </form>

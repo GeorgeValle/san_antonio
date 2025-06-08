@@ -124,9 +124,9 @@ if (!empty($_POST['BotonModificarCliente'])) {
                   
                     <input type='hidden' name="IdPaciente" value="<?php echo $DatosPacienteActual['ID_PACIENTE']; ?>" />
                     
-                    <button type="submit" class="btn btn-primary" value="Modificar" name="BotonModificarCliente">Modificar</button>
+                    <button type="submit" class="btn btn-personalizado" value="Modificar" name="BotonModificarCliente">Modificar</button>
                     <a href="../residentes/listados_residentes.php" 
-                    class="btn btn-success btn-info " 
+                    class="btn btn-secondary" 
                     title="Listado"> Volver al listado  </a>
                 </div>
               </form><!-- End Horizontal Form -->

@@ -130,7 +130,7 @@ if (!empty($_POST['Buscar'])) {
                         <td><?php echo $ListadoTurnos[$i]['HORARIO']; ?></td>
                         <td>
                             <div class="dropdown">
-                                <button class="btn btn-sm btn-outline-primary dropdown-toggle" type="button" id="dropdownServicios<?php echo $i; ?>" data-bs-toggle="dropdown" aria-expanded="false">
+                                <button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button" id="dropdownServicios<?php echo $i; ?>" data-bs-toggle="dropdown" aria-expanded="false">
                                     Ver servicios (<?php echo count($ListadoTurnos[$i]['SERVICIOS']); ?>)
                                 </button>
                                 <ul class="dropdown-menu" aria-labelledby="dropdownServicios<?php echo $i; ?>">

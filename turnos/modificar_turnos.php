@@ -162,9 +162,9 @@ if (!empty($_POST['ModificarTurno'])) {
 
                         <input type='hidden' name="IdTurno" value="<?php echo $DatosTurnoActual['ID_TURNO'] ?? ''; ?>" />
 
-                        <button class="btn btn-primary" type="submit" value="Modificar" name="ModificarTurno">Modificar</button>
+                        <button class="btn btn-personalizado" type="submit" value="Modificar" name="ModificarTurno">Modificar</button>
                         <a href="../turnos/listados_turnos.php" 
-                        class="btn btn-success btn-info " 
+                        class="btn btn-secondary" 
                         title="Listado"> Volver al listado  </a>
                     </div>
                 </form>

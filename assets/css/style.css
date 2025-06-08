@@ -16,6 +16,15 @@
 --------------------------------------------------------------*/
 :root {
   scroll-behavior: smooth;
+  --color-primario: #5A3018;
+  --color-primario-1: #1a0b03;
+  --color-secundario: #FDF5E9;
+  --color-fondo: #f5E7D5;
+
+}
+
+html{
+  background-color: var(--color-fondo);
 }
 
 body {
@@ -25,17 +34,18 @@ body {
 }
 
 a {
-  color: #4154f1;
+  color: var(--color-primario);
   text-decoration: none;
 }
 
 a:hover {
-  color: #717ff5;
+  color: var(--color-primario-1);
   text-decoration: none;
 }
 
 h1, h2, h3, h4, h5, h6 {
   font-family: "Nunito", sans-serif;
+  color: var(--color-primario);
 }
 
 /*--------------------------------------------------------------
@@ -46,6 +56,14 @@ h1, h2, h3, h4, h5, h6 {
   padding: 20px 30px;
   transition: all 0.3s;
 }
+
+main{
+  background-image: url('http://localhost/san_antonio/assets/img/fondo.png'); /* Reemplaza con la URL de tu imagen */
+  background-size: cover; /* Ajusta la imagen para cubrir el área */
+  background-position: center; /* Centra la imagen */
+  background-repeat: no-repeat; /* Evita que se repita */
+}
+
 @media (max-width: 1199px) {
   #main {
     padding: 20px;
@@ -62,7 +80,7 @@ h1, h2, h3, h4, h5, h6 {
   font-size: 24px;
   margin-bottom: 0;
   font-weight: 600;
-  color: #012970;
+  color: var(--color-primario-1);
 }
 
 /*--------------------------------------------------------------
@@ -75,7 +93,7 @@ h1, h2, h3, h4, h5, h6 {
   right: 15px;
   bottom: 15px;
   z-index: 99999;
-  background: #4154f1;
+  background: var(--color-primario);
   width: 40px;
   height: 40px;
   border-radius: 4px;
@@ -87,7 +105,7 @@ h1, h2, h3, h4, h5, h6 {
   line-height: 0;
 }
 .back-to-top:hover {
-  background: #6776f4;
+  background: var(--color-primario-1);
   color: #fff;
 }
 .back-to-top.active {
@@ -219,6 +237,7 @@ h1, h2, h3, h4, h5, h6 {
   border: none;
   border-radius: 5px;
   box-shadow: 0px 0 30px rgba(1, 41, 112, 0.1);
+  background-color: var(--color-secundario);
 }
 
 .card-header, .card-footer {
@@ -232,7 +251,7 @@ h1, h2, h3, h4, h5, h6 {
   padding: 20px 0 15px 0;
   font-size: 18px;
   font-weight: 500;
-  color: #012970;
+  color: var(--color-primario);
   font-family: "Poppins", sans-serif;
 }
 .card-title span {
@@ -297,21 +316,21 @@ h1, h2, h3, h4, h5, h6 {
 .breadcrumb {
   font-size: 14px;
   font-family: "Nunito", sans-serif;
-  color: #899bbd;
+  color: var(--color-primario);
   font-weight: 600;
 }
 .breadcrumb a {
-  color: #899bbd;
+  color: var(--color-primario);
   transition: 0.3s;
 }
 .breadcrumb a:hover {
-  color: #51678f;
+  color: var(--color-primario);
 }
 .breadcrumb .breadcrumb-item::before {
-  color: #899bbd;
+  color: var(--color-primario);
 }
 .breadcrumb .active {
-  color: #51678f;
+  color: var(--color-primario);
   font-weight: 600;
 }
 
@@ -351,7 +370,7 @@ h1, h2, h3, h4, h5, h6 {
 .logo span {
   font-size: 26px;
   font-weight: 700;
-  color: #012970;
+  color: var(--color-primario);
   font-family: "Nunito", sans-serif;
 }
 
@@ -360,7 +379,7 @@ h1, h2, h3, h4, h5, h6 {
   z-index: 997;
   height: 60px;
   box-shadow: 0px 2px 20px rgba(1, 41, 112, 0.1);
-  background-color: #fff;
+  background-color: var(--color-primario);
   padding-left: 20px;
   /* Toggle Sidebar Button */
   /* Search Bar */
@@ -369,7 +388,11 @@ h1, h2, h3, h4, h5, h6 {
   font-size: 32px;
   padding-left: 10px;
   cursor: pointer;
-  color: #012970;
+  color: var(--color-secundario);
+}
+
+.header .logo span {
+  color: var(--color-secundario)
 }
 .header .search-bar {
   min-width: 360px;
@@ -435,10 +458,10 @@ h1, h2, h3, h4, h5, h6 {
 }
 .header-nav .nav-icon {
   font-size: 20px;
-  color: #012970;
+  color: var(--color-secundario);
 }
 .header-nav .nav-profile {
-  color: #012970;
+  color: var(--color-secundario);
 }
 .header-nav .nav-profile img {
   max-height: 36px;
@@ -545,7 +568,8 @@ h1, h2, h3, h4, h5, h6 {
   scrollbar-width: thin;
   scrollbar-color: #aab7cf transparent;
   box-shadow: 0px 0px 20px rgba(1, 41, 112, 0.1);
-  background-color: #fff;
+  background-image: url('http://localhost/san_antonio/assets/img/patron.png');
+  background-size: cover;
 }
 @media (max-width: 1199px) {
   .sidebar {
@@ -605,7 +629,7 @@ h1, h2, h3, h4, h5, h6 {
   align-items: center;
   font-size: 15px;
   font-weight: 600;
-  color: #4154f1;
+  color: var(--color-primario);
   transition: 0.3;
   background: #f6f9ff;
   padding: 10px 15px;
@@ -614,21 +638,21 @@ h1, h2, h3, h4, h5, h6 {
 .sidebar-nav .nav-link i {
   font-size: 16px;
   margin-right: 10px;
-  color: #4154f1;
+  color: var(--color-primario);
 }
 .sidebar-nav .nav-link.collapsed {
-  color: #012970;
+  color: var(--color-primario);
   background: #fff;
 }
 .sidebar-nav .nav-link.collapsed i {
-  color: #899bbd;
+  color: var(--color-primario);
 }
 .sidebar-nav .nav-link:hover {
-  color: #4154f1;
-  background: #f6f9ff;
+  color: var(--color-primario-1);
+  background: var(--color-secundario);
 }
 .sidebar-nav .nav-link:hover i {
-  color: #4154f1;
+  color: var(--color-primario-1);
 }
 .sidebar-nav .nav-link .bi-chevron-down {
   margin-right: 0;
@@ -647,7 +671,7 @@ h1, h2, h3, h4, h5, h6 {
   align-items: center;
   font-size: 14px;
   font-weight: 600;
-  color: #012970;
+  color: var(--color-primario);
   transition: 0.3;
   padding: 10px 0 10px 40px;
   transition: 0.3s;
@@ -659,10 +683,10 @@ h1, h2, h3, h4, h5, h6 {
   border-radius: 50%;
 }
 .sidebar-nav .nav-content a:hover, .sidebar-nav .nav-content a.active {
-  color: #4154f1;
+  color: var(--color-primario);
 }
 .sidebar-nav .nav-content a.active i {
-  background-color: #4154f1;
+  background-color: var(--color-primario)
 }
 
 /*--------------------------------------------------------------
@@ -1069,15 +1093,29 @@ h1, h2, h3, h4, h5, h6 {
   padding: 20px 0;
   font-size: 14px;
   transition: all 0.3s;
-  border-top: 1px solid #cddfff;
+  border-top: 1px solid var(--color-secundario);
+  background-color: var(--color-fondo);
 }
 .footer .copyright {
   text-align: center;
-  color: #012970;
+  color: var(--color-primario);
 }
 .footer .credits {
   padding-top: 5px;
   text-align: center;
   font-size: 13px;
-  color: #012970;
+  color: var(--color-primario);
+}
+
+/*--------------------------------------------------------------
+# Button
+--------------------------------------------------------------*/
+.btn-personalizado {
+  background-color: var(--color-primario);
+  color: var(--color-secundario);
+}
+
+.form-check-input:checked {
+    background-color: var(--color-primario); /* Verde */
+    border-color: var(--color-primario-1);
 }

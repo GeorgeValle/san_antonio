@@ -118,7 +118,7 @@ if (!empty($_POST['Registrar'])) {
 
                     <!-- Botones -->
                     <div class="text-center">
-                        <button class="btn btn-primary" type="submit" value="Registrar" name="Registrar">Registrar</button>
+                        <button class="btn btn-personalizado" type="submit" value="Registrar" name="Registrar">Registrar</button>
                         <button type="reset" class="btn btn-secondary">Limpiar Campos</button>
                     </div>
                 </form>

@@ -201,7 +201,7 @@ foreach ($servicios as $s) {
                     </div>
 
                     <div class="text-center mt-3">
-                        <button class="btn btn-primary" type="submit">Guardar Cambios</button>
+                        <button class="btn btn-personalizado" type="submit">Guardar Cambios</button>
                         <a href="listados_historia.php" class="btn btn-secondary">Volver al listado</a>
                     </div>
                 </form>

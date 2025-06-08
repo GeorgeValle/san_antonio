@@ -213,7 +213,8 @@ $CantidadHistoria = count($ListadoHistoria);
             onclick="return confirm('Confirma eliminar esta historia médica?');">
             <i class="bi bi-trash-fill text-danger fs-5"></i>
         </a>
-        <a href="modificar_historia.php?ID_HISTORIA=<?= $ListadoHistoria[$i]['ID_HISTORIA']; ?>" class="btn btn-primary btn-sm">
+        <a href="modificar_historia.php?ID_HISTORIA=<?= $ListadoHistoria[$i]['ID_HISTORIA']; ?>" 
+            title="Modificar">
             <i class="bi bi-pencil-fill text-warning fs-5"></i>
         </a>
     </td>
