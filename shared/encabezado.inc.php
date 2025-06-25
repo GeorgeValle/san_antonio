@@ -52,8 +52,9 @@
   <header id="header" class="header fixed-top d-flex align-items-center">
 
     <div class="d-flex align-items-center justify-content-between">
-      <a href="index.php" class="logo d-flex align-items-center">
-        <span class="d-none d-lg-block">SAN ANTONIO</span>
+      <a href="../core/index.php" class="logo d-flex align-items-center">
+        <span class="d-none d-lg-block me-2">SAN ANTONIO</span>
+        <img src="http://localhost/san_antonio/assets/img/logo-circulo1.png" alt="Logo" style="height: 40px;">
       </a>
       <i class="bi bi-list toggle-sidebar-btn"></i>
     </div><!-- End Logo -->

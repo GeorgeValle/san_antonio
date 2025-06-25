@@ -11,16 +11,16 @@
 
       <li class="nav-item">
         <a class="nav-link collapsed" data-bs-target="#components-nav" data-bs-toggle="collapse" href="#">
-          <i class="bi bi-person-bounding-box"></i><span>Pacientes</span><i class="bi bi-chevron-down ms-auto"></i>
+          <i class="bi bi-person-bounding-box"></i><span>Residentes</span><i class="bi bi-chevron-down ms-auto"></i>
         </a>
         <ul id="components-nav" class="nav-content collapse " data-bs-parent="#sidebar-nav">
           <li>
-            <a href="../pacientes/agregar_pacientes.php">
+            <a href="../residentes/agregar_residentes.php">
               <i class="bi bi-circle"></i><span>Agregar</span>
             </a>
           </li>
           <li>
-            <a href="../pacientes/listados_pacientes.php">
+            <a href="../residentes/listados_residentes.php">
               <i class="bi bi-circle"></i><span>Listados</span>
             </a>
           </li>

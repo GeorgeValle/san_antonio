@@ -136,32 +136,107 @@ $CantidadHistoria = count($ListadoHistoria);
               </tr>
             </thead>
             <tbody>
-                <?php for ($i=0; $i<$CantidadHistoria; $i++) { ?>
-                    <tr>
-                        <th scope="row"><?php echo $i+1; ?></th>
-                        <td><?php echo $ListadoHistoria[$i]['NOMBREPACIENTE'] . " " . $ListadoHistoria[$i]['APELLIDOPACIENTE']; ?></td>
-                        <td><?php echo $ListadoHistoria[$i]['DNI']; ?></td>
-                        <td><?php echo $ListadoHistoria[$i]['ENFERMEDADES']; ?></td>
-                        <td><?php echo $ListadoHistoria[$i]['MEDICAMENTOS']; ?></td>
-                        <td><?php echo $ListadoHistoria[$i]['SERVICIOS']; ?></td>
-                        <td><?php echo $ListadoHistoria[$i]['ESPARCIMIENTO']; ?></td>
-                        <td>
-                          <!-- eliminar la consulta -->
-                          <a href="../historiaMedica/eliminar_historia.php?ID_HISTORIA=<?php echo $ListadoHistoria[$i]['ID_HISTORIA']; ?>" 
-                            title="Eliminar" 
-                            onclick="return confirm('Confirma eliminar esta historia medica?');">
-                              <i class="bi bi-trash-fill text-danger fs-5"></i>
-                          </a>
+<?php for ($i=0; $i<$CantidadHistoria; $i++) { ?>
+<tr>
+    <th scope="row"><?php echo $i+1; ?></th>
+    <td><?php echo $ListadoHistoria[$i]['NOMBREPACIENTE'] . " " . $ListadoHistoria[$i]['APELLIDOPACIENTE']; ?></td>
+    <td><?php echo $ListadoHistoria[$i]['DNI']; ?></td>
 
-                          <a href="../historiaMedica/modificar_historia.php?ID_HISTORIA=<?php echo $ListadoHistoria[$i]['ID_HISTORIA']; ?>" 
-                            title="Modificar">
-                            <i class="bi bi-pencil-fill text-warning fs-5"></i>
-                          </a>
-                      
-                        </td>
-                    </tr>
-                <?php } ?>
-            </tbody>
+    <!-- Enfermedades -->
+<?php
+$enfermedadesData = $ListadoHistoria[$i]['ENFERMEDADES'];
+$enfermedades = is_array($enfermedadesData) ? $enfermedadesData : explode(',', $enfermedadesData);
+?>
+<td>
+    <div class="dropdown">
+        <button class="dropdown-toggle p-0 border-0 bg-transparent text-dark"
+                type="button" data-bs-toggle="dropdown" aria-expanded="false"
+                style="text-decoration: none; cursor: pointer;">
+            <?php echo !empty(trim($enfermedades[0])) ? trim($enfermedades[0]) : 'Ninguno'; ?>
+        </button>
+        <ul class="dropdown-menu">
+            <?php foreach ($enfermedades as $item) { ?>
+                <li><span class="dropdown-item-text"><?php echo trim($item); ?></span></li>
+            <?php } ?>
+        </ul>
+    </div>
+</td>
+
+<!-- Medicamentos -->
+<?php
+$medicamentosData = $ListadoHistoria[$i]['MEDICAMENTOS'];
+$medicamentos = is_array($medicamentosData) ? $medicamentosData : explode(',', $medicamentosData);
+?>
+<td>
+    <div class="dropdown">
+        <button class="dropdown-toggle p-0 border-0 bg-transparent text-dark"
+                type="button" data-bs-toggle="dropdown" aria-expanded="false"
+                style="text-decoration: none; cursor: pointer;">
+            <?php echo !empty(trim($medicamentos[0])) ? trim($medicamentos[0]) : 'Ninguno'; ?>
+        </button>
+        <ul class="dropdown-menu">
+            <?php foreach ($medicamentos as $item) { ?>
+                <li><span class="dropdown-item-text"><?php echo trim($item); ?></span></li>
+            <?php } ?>
+        </ul>
+    </div>
+</td>
+
+<!-- Servicios -->
+<?php
+$serviciosData = $ListadoHistoria[$i]['SERVICIOS'];
+$servicios = is_array($serviciosData) ? $serviciosData : explode(',', $serviciosData);
+?>
+<td>
+    <div class="dropdown">
+        <button class="dropdown-toggle p-0 border-0 bg-transparent text-dark"
+                type="button" data-bs-toggle="dropdown" aria-expanded="false"
+                style="text-decoration: none; cursor: pointer;">
+            <?php echo !empty(trim($servicios[0])) ? trim($servicios[0]) : 'Ninguno'; ?>
+        </button>
+        <ul class="dropdown-menu">
+            <?php foreach ($servicios as $item) { ?>
+                <li><span class="dropdown-item-text"><?php echo trim($item); ?></span></li>
+            <?php } ?>
+        </ul>
+    </div>
+</td>
+
+<!-- Esparcimiento -->
+<?php
+$esparcimientoData = $ListadoHistoria[$i]['ESPARCIMIENTO'];
+$esparcimiento = is_array($esparcimientoData) ? $esparcimientoData : explode(',', $esparcimientoData);
+?>
+<td>
+    <div class="dropdown">
+        <button class="dropdown-toggle p-0 border-0 bg-transparent text-dark"
+                type="button" data-bs-toggle="dropdown" aria-expanded="false"
+                style="text-decoration: none; cursor: pointer;">
+            <?php echo !empty(trim($esparcimiento[0])) ? trim($esparcimiento[0]) : 'Ninguno'; ?>
+        </button>
+        <ul class="dropdown-menu">
+            <?php foreach ($esparcimiento as $item) { ?>
+                <li><span class="dropdown-item-text"><?php echo trim($item); ?></span></li>
+            <?php } ?>
+        </ul>
+    </div>
+</td>
+
+    <!-- Acciones -->
+    <td>
+        <a href="../historiaMedica/eliminar_historia.php?ID_HISTORIA=<?php echo $ListadoHistoria[$i]['ID_HISTORIA']; ?>" 
+            title="Eliminar" 
+            onclick="return confirm('Confirma eliminar esta historia médica?');">
+            <i class="bi bi-trash-fill text-danger fs-5"></i>
+        </a>
+        <a href="modificar_historia.php?ID_HISTORIA=<?= $ListadoHistoria[$i]['ID_HISTORIA']; ?>" 
+            title="Modificar">
+            <i class="bi bi-pencil-fill text-warning fs-5"></i>
+        </a>
+    </td>
+</tr>
+<?php } ?>
+</tbody>
           </table>
           <!-- End Table with stripped rows -->
 
@@ -179,5 +254,6 @@ $CantidadHistoria = count($ListadoHistoria);
 
 
 </body>
+
 
 </html>

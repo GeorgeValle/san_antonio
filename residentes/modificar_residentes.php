@@ -20,6 +20,7 @@ require_once '../funciones/select_general.php';
 //este array contendra los datos de la consulta original, y cuando 
 //pulse el boton, mantendrá los datos ingresados hasta que se validen y se puedan modificar
 $DatosClienteActual=array();
+$tipos_paciente = ListarTiposPaciente($MiConexion);
 
 if (!empty($_POST['BotonModificarCliente'])) {
     Validar_Paciente_Modificar();
@@ -29,7 +30,7 @@ if (!empty($_POST['BotonModificarCliente'])) {
         if (Modificar_Paciente($MiConexion) != false) {
             $_SESSION['Mensaje'] = "Tu paciente se ha modificado correctamente!";
             $_SESSION['Estilo']='success';
-            header('Location: ../pacientes/listados_pacientes.php');
+            header('Location: ../residentes/listados_residentes.php');
             exit;
         }
 
@@ -39,6 +40,7 @@ if (!empty($_POST['BotonModificarCliente'])) {
         $DatosPacienteActual['NOMBRE'] = !empty($_POST['Nombre']) ? $_POST['Nombre'] :'';
         $DatosPacienteActual['APELLIDO'] = !empty($_POST['Apellido']) ? $_POST['Apellido'] :'';
         $DatosPacienteActual['TELEFONO'] = !empty($_POST['Telefono']) ? $_POST['Telefono'] :'';
+        $DatosPacienteActual['DNI'] = !empty($_POST['DNI']) ? $_POST['DNI'] :'';
     }
 
 }else if (!empty($_GET['ID_PACIENTE'])) {
@@ -52,19 +54,19 @@ if (!empty($_POST['BotonModificarCliente'])) {
   <main id="main" class="main">
 
     <div class="pagetitle">
-      <h1>Pacientes</h1>
+      <h1>Residentes</h1>
       <nav>
         <ol class="breadcrumb">
           <li class="breadcrumb-item"><a href="../inicio/index.php">Menu</a></li>
-          <li class="breadcrumb-item">Pacientes</li>
-          <li class="breadcrumb-item active">Modificar Pacientes</li>
+          <li class="breadcrumb-item">Residentes</li>
+          <li class="breadcrumb-item active">Modificar Residentes</li>
         </ol>
       </nav>
     </div><!-- End Page Title -->
     <section class="section">
           <div class="card">
             <div class="card-body">
-              <h5 class="card-title">Modificar Pacientes</h5>
+              <h5 class="card-title">Modificar Residentes</h5>
 
               <!-- Horizontal Form -->
                 <form method='post'>
@@ -102,14 +104,29 @@ if (!empty($_POST['BotonModificarCliente'])) {
                     value="<?php echo !empty($DatosPacienteActual['DNI']) ? $DatosPacienteActual['DNI'] : ''; ?>">
                   </div>
                 </div>
+                <div class="row mb-3">
+                  <label for="inputTipoPaciente" class="col-sm-2 col-form-label">Tipo de Paciente</label>
+                  <div class="col-sm-10">
+                      <select class="form-select" name="idTipoPaciente" id="inputTipoPaciente" required>
+                          <option value="">Seleccione un tipo</option>
+                          <?php foreach ($tipos_paciente as $tipo): ?>
+                              <option value="<?php echo $tipo['id_tipo_paciente']; ?>"
+                                  <?php echo (!empty($DatosPacienteActual['ID_TIPO_PACIENTE']) && 
+                                            $DatosPacienteActual['ID_TIPO_PACIENTE'] == $tipo['id_tipo_paciente']) ? 'selected' : ''; ?>>
+                                  <?php echo htmlspecialchars($tipo['denominacion']); ?>
+                              </option>
+                          <?php endforeach; ?>
+                      </select>
+                  </div>
+              </div>
 
                 <div class="text-center">
                   
                     <input type='hidden' name="IdPaciente" value="<?php echo $DatosPacienteActual['ID_PACIENTE']; ?>" />
                     
-                    <button type="submit" class="btn btn-primary" value="Modificar" name="BotonModificarCliente">Modificar</button>
-                    <a href="../pacientes/listados_pacientes.php" 
-                    class="btn btn-success btn-info " 
+                    <button type="submit" class="btn btn-personalizado" value="Modificar" name="BotonModificarCliente">Modificar</button>
+                    <a href="../residentes/listados_residentes.php" 
+                    class="btn btn-secondary" 
                     title="Listado"> Volver al listado  </a>
                 </div>
               </form><!-- End Horizontal Form -->

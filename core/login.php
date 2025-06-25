@@ -87,9 +87,10 @@ if (!empty($_POST['BotonLogin'])) {
 
               <div class="d-flex justify-content-center py-4">
                 <a href="index.php" class="logo d-flex align-items-center w-auto">
+                  <img src="http://localhost/san_antonio/assets/img/logo-circulo.png" alt="Logo" class="me-2" style="height: 40px;">
                   <span class="d-none d-lg-block">SAN ANTONIO</span>
                 </a>
-              </div><!-- End Logo -->
+              </div>
 
               <div class="card mb-3">
 
@@ -123,7 +124,7 @@ if (!empty($_POST['BotonLogin'])) {
                     </div>
 
                     <div class="col-12">
-                      <button class="btn btn-primary w-100" type="submit" value="Login" name="BotonLogin">Iniciar</button>
+                      <button class="btn btn-personalizado w-100" type="submit" value="Login" name="BotonLogin">Iniciar</button>
                     </div>
                   </form>
 
